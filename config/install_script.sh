@@ -67,6 +67,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # +---------- Minute (0 - 59)
 
 * * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute 
+0 * * * * ntpdate 10.13.80.254
+
 EOF
 )
 
