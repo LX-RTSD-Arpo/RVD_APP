@@ -52,6 +52,16 @@ chmod +x /root/RVD_APP/tools/bridge_on.sh
 chmod +x /root/RVD_APP/tools/bridge_off.sh
 chmod +x /root/RVD_APP/tools/br_Off.sh
 
+NEW_HOSTNAME="RVD-FP"
+
+# Update the /etc/hostname file
+echo "$NEW_HOSTNAME" | sudo tee /etc/hostname
+
+# Update the current hostname
+sudo hostnamectl set-hostname "$NEW_HOSTNAME"
+
+echo "Hostname successfully changed to $NEW_HOSTNAME"
+
 # Cron configuration
 CRON_JOB_CONTENT=$(cat <<EOF
 SHELL=/bin/sh
