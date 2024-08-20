@@ -1,0 +1,9 @@
+auto eth0
+#iface eth0 inet dhcp
+iface eth0 inet static
+    address 10.13.80.87/24
+    netmask 255.255.255.0
+    gateway 10.13.80.254
+    dns-nameservers 8.8.8.8 8.8.4.4
+    post-up ip route add 10.13.80.254/32 dev eth0
+    pre-down ip route del 10.13.80.254/32 dev eth0

@@ -1,0 +1,7 @@
+auto eth1
+iface eth1 inet static
+	address 10.13.80.86/24
+	netmask 255.255.255.0
+	broadcast 10.13.80.255
+	post-up ip route add 10.13.80.85/32 dev eth1
+	pre-down ip route del 10.13.80.85/32 dev eth1

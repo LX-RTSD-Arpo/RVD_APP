@@ -1,0 +1,61 @@
+/* 
+Install libmodbus: 	sudo apt-get install libmodbus-dev
+Compile command: 	gcc -o modbus_master modbus_master.c -lmodbus
+
+--------------------------------NOTE-----------------------------------
+Ensure you replace /dev/ttyS0 with the appropriate serial port device 
+and adjust the MODBUS slave address, starting address, and the number 
+of registers to read based on your specific MODBUS RTU slave device 
+and requirements.
+-----------------------------------------------------------------------
+
+*/
+
+#include <stdio.h>
+#include <modbus.h>
+
+int main() {
+    modbus_t *ctx;
+    uint16_t holding_registers[64];  // Array to store received data
+
+    // Create a MODBUS context
+    ctx = modbus_new_rtu("/dev/ttyS0", 9600, 'N', 8, 1);
+    
+    if (ctx == NULL) {
+        fprintf(stderr, "Unable to create MODBUS context\n");
+        return -1;
+    }
+
+    // Set the MODBUS slave address
+    modbus_set_slave(ctx, 1);
+
+    // Connect to the MODBUS RTU slave
+    if (modbus_connect(ctx) == -1) {
+        fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
+        modbus_free(ctx);
+        return -1;
+    }
+
+    // Read holding registers (function code 3)
+    int num_registers = 10;  // Number of registers to read
+    int start_address = 0;   // Starting address for reading
+    int rc = modbus_read_registers(ctx, start_address, num_registers, holding_registers);
+
+    if (rc == -1) {
+        fprintf(stderr, "MODBUS read error: %s\n", modbus_strerror(errno));
+        modbus_close(ctx);
+        modbus_free(ctx);
+        return -1;
+    }
+
+    // Print the received data
+    for (int i = 0; i < num_registers; i++) {
+        printf("Register %d: %d\n", start_address + i, holding_registers[i]);
+    }
+
+    // Close the MODBUS RTU connection
+    modbus_close(ctx);
+    modbus_free(ctx);
+
+    return 0;
+}
