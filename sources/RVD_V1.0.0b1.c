@@ -540,7 +540,7 @@ int main(int argc, char *argv[])
             perror("Select error");
             exit(EXIT_FAILURE);
         } else if (nready == 0) {
-            printf("\nNo new connections for %ld seconds. Timing out...\n", dev_ntimeout);
+            printf("\nNo new connections for %d seconds. Timing out...\n", dev_ntimeout);
             close(newfd);
             printf("\nListening...\n");
         }
