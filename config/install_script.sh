@@ -16,10 +16,10 @@ sudo apt-get install libncurses5-dev libncursesw5-dev
 
 # Set timezone & sync-time
 sudo timedatectl set-timezone Asia/Bangkok
-ntpdate 10.13.80.254
+#ntpdate 10.13.80.254
 
 # Network configuration
-SOURCE_DIR="/root/RVD/config"
+SOURCE_DIR="/root/RVD_APP/config"
 DEST_DIR="/etc/network/interfaces.d"
 
 if [[ ! -f "$SOURCE_DIR/custom_eth0" || ! -f "$SOURCE_DIR/custom_eth1" || ! -f "$SOURCE_DIR/custom_br0" ]]; then
@@ -41,14 +41,14 @@ sysctl -p
 
 echo "The line 'net.ipv4.ip_forward=1' has been uncommented and sysctl settings reloaded."
 
-sed -i -e 's/\r$//' /root/RVD/run.sh
-sed -i -e 's/\r$//' /root/RVD/tools/bridge_on.sh
-sed -i -e 's/\r$//' /root/RVD/tools/bridge_off.sh
-sed -i -e 's/\r$//' /root/RVD/tools/br_Off.sh
-chmod +x /root/RVD/run.sh
-chmod +x /root/RVD/tools/bridge_on.sh
-chmod +x /root/RVD/tools/bridge_off.sh
-chmod +x /root/RVD/tools/br_Off.sh
+sed -i -e 's/\r$//' /root/RVD_APP/run.sh
+sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_on.sh
+sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_off.sh
+sed -i -e 's/\r$//' /root/RVD_APP/tools/br_Off.sh
+chmod +x /root/RVD_APP/run.sh
+chmod +x /root/RVD_APP/tools/bridge_on.sh
+chmod +x /root/RVD_APP/tools/bridge_off.sh
+chmod +x /root/RVD_APP/tools/br_Off.sh
 
 # Cron configuration
 CRON_JOB_CONTENT=$(cat <<EOF
@@ -64,7 +64,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # | +-------- Hour (0 - 23)
 # +---------- Minute (0 - 59)
 
-* * * * * /root/RVD/run.sh # Check the RVD program every 1 minute 
+* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute 
 EOF
 )
 
@@ -83,8 +83,8 @@ cat <<EOL > /etc/rc.local
 # rc.local
 
 # List of programs to run at startup
-/root/RVD/tools/br_Off.sh &
-/root/RVD/run.sh &
+/root/RVD_APP/tools/br_Off.sh &
+/root/RVD_APP/run.sh &
 
 exit 0
 EOL
