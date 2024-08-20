@@ -41,6 +41,8 @@ sysctl -p
 
 echo "The line 'net.ipv4.ip_forward=1' has been uncommented and sysctl settings reloaded."
 
+gcc /root/RVD_APP/sources/RVD_V1.0.0b1.c -o /root/RVD_APP/sources/rvd_v1.0.0b1 -lpthread -lmodbus
+
 sed -i -e 's/\r$//' /root/RVD_APP/run.sh
 sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_on.sh
 sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_off.sh
