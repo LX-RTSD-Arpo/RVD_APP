@@ -433,25 +433,26 @@ int main(int argc, char *argv[])
         attempts++;
     }
 
-    attempts = 0;
+    if (fd == -1) { 
+    	attempts = 0;
+    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
+            snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
+            fd = open(serial_port, O_RDWR | O_NOCTTY);
 
-    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-        fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-        if (fd != -1) {
-            printf("Serial port %s opened successfully.\n", serial_port);
-            close(fd);
-            break;
-        } else {
-            if (errno == ENOENT) {
-                printf("%s does not exist. Trying the next port...\n", serial_port);
-            } else {
-                perror("Error opening serial port");
+            if (fd != -1) {
+                printf("Serial port %s opened successfully.\n", serial_port);
+                close(fd);
                 break;
+            } else {
+                if (errno == ENOENT) {
+                    printf("%s does not exist. Trying the next port...\n", serial_port);
+                } else {
+                    perror("Error opening serial port");
+                    break;
+                }
             }
+            attempts++;
         }
-        attempts++;
     }
 
     ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
@@ -715,7 +716,7 @@ int main(int argc, char *argv[])
                                     tcp_pack[b++] = 0x07;
                                     tcp_pack[b++] = 0x00;
                                     tcp_pack[b++] = 0x00;
-                                    /*attempts = 0;
+                                    attempts = 0;
                                     while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
                                         snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
                                         fd = open(serial_port, O_RDWR | O_NOCTTY);
@@ -731,27 +732,30 @@ int main(int argc, char *argv[])
                                             }   
                                         }
                                         attempts++;
-                                    }*/
-
-				                    attempts = 0;
-                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-                                        if (fd != -1) {
-                                            printf("Serial port %s opened successfully.\n", serial_port);
-                                            close(fd); // Close the file descriptor if needed
-                                            break;
-                                        } else {
-                                            if (errno == ENOENT) {
-                                                printf("%s does not exist. Trying the next port...\n", serial_port);
-                                            } else {
-                                                perror("Error opening serial port");
-                                                break;
-                                            }
-                                        }
-                                        attempts++;
                                     }
+
+				    if (fd == -1) {
+				    	attempts = 0;
+                                    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
+                                            snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
+                                            fd = open(serial_port, O_RDWR | O_NOCTTY);
+
+                                            if (fd != -1) {
+                                        	printf("Serial port %s opened successfully.\n", serial_port);
+                                            	close(fd); // Close the file descriptor if needed
+                                            	break;
+                                            } else {
+                                            	if (errno == ENOENT) {
+                                                    printf("%s does not exist. Trying the next port...\n", serial_port);
+                                            	} else {
+                                                    perror("Error opening serial port");
+                                                    break;
+                                            	}
+                                            }
+                                            attempts++;
+                                        }
+				    }
+					
                                     ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
                                     if (ctx == NULL)
                                         fprintf(stderr, "Unable to create MODBUS context\n");
@@ -818,7 +822,7 @@ int main(int argc, char *argv[])
                                     tcp_pack[b++] = 0x07;
                                     tcp_pack[b++] = 0x00;
 
-                                    /*attempts = 0;
+                                    attempts = 0;
                                     while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
                                         snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
                                         fd = open(serial_port, O_RDWR | O_NOCTTY);
@@ -835,28 +839,30 @@ int main(int argc, char *argv[])
                                             }
                                         }
                                         attempts++;
-                                    }*/
-
-				                    attempts = 0;
-                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-                                        if (fd != -1) {
-                                            printf("Serial port %s opened successfully.\n", serial_port);
-                                            close(fd); // Close the file descriptor if needed
-                                            break;
-                                        } else {
-                                            if (errno == ENOENT) {
-                                                printf("%s does not exist. Trying the next port...\n", serial_port);
-                                            } else {
-                                                perror("Error opening serial port");
-                                                break;
-                                            }
-                                        }
-                                        attempts++;
                                     }
 
+				    if (fd == -1) {
+				    	attempts = 0;
+                                    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
+                                            snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
+                                            fd = open(serial_port, O_RDWR | O_NOCTTY);
+
+                                            if (fd != -1) {
+                                            	printf("Serial port %s opened successfully.\n", serial_port);
+                                            	close(fd); // Close the file descriptor if needed
+                                        	break;
+                                            } else {
+                                            	if (errno == ENOENT) {
+                                                    printf("%s does not exist. Trying the next port...\n", serial_port);
+                                                } else {
+                                                    perror("Error opening serial port");
+                                                    break;
+                                                }
+                                            }
+                                            attempts++;
+                                        }
+				    }
+					
                                     ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
                                     if (ctx == NULL) {
                                         fprintf(stderr, "Unable to create MODBUS context\n");
