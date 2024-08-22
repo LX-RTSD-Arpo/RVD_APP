@@ -781,11 +781,11 @@ int main(int argc, char *argv[])
                                     tcp_pack[b++] = 0x01;
                                     float voltage = 0;
                                     for (int i = 0; i < REGIS_COUNT; i++) {
-                                        voltage = (input_registers[i] / 4);
-                                        voltage = (voltage/ 1024) * 61;
+                                        voltage = (input_registers[i] / 400) * 24;
+                                        //voltage = (voltage/ 1024) * 61;
                                         printf("\t\t\nInput Voltage CH%d = %u ", i + 1, (int)voltage);
                                         tcp_pack[b++] = (int)voltage;
-				                    }
+				    }
                                 }
 
                                 memcpy(checker, &tcp_pack[1], b - 1);
@@ -796,7 +796,7 @@ int main(int argc, char *argv[])
                                 b += 2;
                                 tcp_pack[b++] = 0x03;
                                 send(newfd, tcp_pack, b, 0);
-			                    break;
+			        break;
                             case 5:
                                 printf(" --> Power reset request");
                                 tcp_pack[2] = 0x16;
