@@ -43,12 +43,12 @@
 FILE *storefile;
 
 unsigned char start[30] = {0x7e, 0x01, 0x0c, 0x00, 0x10, 0x07, 0x00, 0x00, 0x00, 0x00, 0x80, 0x88,
-                        0x03, 0x00, 0x00, 0x00,
-                        0x01, 0x00, 0x00, 0x01, // Client ID
-                        0xc0, 0xa8, 0x0b, 0x08, // NanoPi IP
-                        0xd9, 0x03,             // Port
-                        0x00, 0x00,
-                        0xf4, 0x49};               // CRC
+                           0x03, 0x00, 0x00, 0x00,
+                           0x01, 0x00, 0x00, 0x01, // Client ID
+                           0xc0, 0xa8, 0x0b, 0x08, // NanoPi IP
+                           0xd9, 0x03,             // Port
+                           0x00, 0x00,
+                           0xf4, 0x49}; // CRC
 const char Header[16] = {0x7e, 0x01, 0x10, 0x00, 0x21, 0x04, 0x00, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x01, 0xE5, 0xCD};
 const char MsgAct[5] = {0x03, 0xfb, 0x08, 0xE8, 0x03};
 char dev_addr[2] = {0x02, 0x65};
@@ -101,8 +101,8 @@ struct sockaddr_in mcast, mcast_dest, receiver, *sa, server;
 struct timeval tv, net_tv, stimeout;
 
 int a, b, i, j, k, pack_byte, q, val, Crc_Byte, Crc_Time, Crc_UDP;
-unsigned char bu_buf[BUF_SIZ], checker[BUF_SIZ], Tchecker[BUF_SIZ], udp_checker[BUF_SIZ], client_buf[BUF_SIZ], crc_buf[2], crc_tbuf[2], crc_ubuf[2], dummy1[22], 
-dummy2[33], len_buf[2], recv_buf[BUF_SIZ], packet[BUF_SIZ], seq_buf[3], tcp_pack[BUF_SIZ], tm_buf[8], val_buf[BUF_SIZ], ver_buf[2];
+unsigned char bu_buf[BUF_SIZ], checker[BUF_SIZ], Tchecker[BUF_SIZ], udp_checker[BUF_SIZ], client_buf[BUF_SIZ], crc_buf[2], crc_tbuf[2], crc_ubuf[2], dummy1[22],
+    dummy2[33], len_buf[2], recv_buf[BUF_SIZ], packet[BUF_SIZ], seq_buf[3], tcp_pack[BUF_SIZ], tm_buf[8], val_buf[BUF_SIZ], ver_buf[2];
 
 int mc, fd, idx;
 modbus_t *ctx;
@@ -110,26 +110,30 @@ uint16_t holding_registers[REGIS_COUNT] = {0};
 uint16_t input_registers[REGIS_COUNT] = {0};
 uint8_t coils[REGIS_COUNT] = {0};
 
-typedef struct {
+typedef struct
+{
     char *ipAddress1;
     char *ipAddress2;
     char *gateway[10];
 } NetworkInfo;
 
-typedef struct {
+typedef struct
+{
     void *(*thread_function)(void *);
     NetworkInfo *networkInfo;
     int radar_port;
 } ThreadArgs;
 
-typedef struct {
+typedef struct
+{
     unsigned char qbuffer[MAX_QUEUE][BUF_SIZ];
     int front, rear;
     int count;
 } CircularBufferMatrix;
 CircularBufferMatrix cb1;
 
-typedef struct {
+typedef struct
+{
     char radar_ip[INET_ADDRSTRLEN];
     char pi_ip[INET_ADDRSTRLEN];
     int radar_alive_port;
@@ -144,57 +148,78 @@ void enqueue(CircularBufferMatrix *, unsigned char *);
 void dequeue(CircularBufferMatrix *, unsigned char *);
 NetworkInfo *ExtractNetwork(const char *, const char *);
 
-int parse_config(const char *filename, 
-                char *radar_ip, 
-                int *radar_port, 
-                int *radar_alive_port, 
-                int *server_port,
-                uint8_t *response_sender, 
-                uint8_t *response_receiver, 
-                uint8_t *dev_ntimeout, 
-                uint8_t *reset_output1_enable,
-                uint8_t *reset_output2_enable)
+int parse_config(const char *filename,
+                 char *radar_ip,
+                 int *radar_port,
+                 int *radar_alive_port,
+                 int *server_port,
+                 uint8_t *response_sender,
+                 uint8_t *response_receiver,
+                 uint8_t *dev_ntimeout,
+                 uint8_t *reset_output1_enable,
+                 uint8_t *reset_output2_enable)
 {
     FILE *file = fopen(filename, "r");
-    if (!file) {
+    if (!file)
+    {
         perror("Unable to open configuration filee");
-	    return -1;
+        return -1;
     }
 
     char line[MAX_LINE_LENGTH];
 
-    while (fgets(line, sizeof(line), file)) {
-	    char *key = strtok(line, "=");
-	    char *value = strtok(NULL,"\n");
+    while (fgets(line, sizeof(line), file))
+    {
+        char *key = strtok(line, "=");
+        char *value = strtok(NULL, "\n");
 
-	    if (key && value) {
-	        if (strcmp(key, "RADAR_IP") == 0) {
-		        strncpy(radar_ip, value, INET_ADDRSTRLEN);
-	        } else if (strcmp(key, "RADAR_PORT") == 0) {
-		        *radar_port = atoi(value);
-	        } else if (strcmp(key, "RADAR_ALIVE_PORT") == 0) {
-		        *radar_alive_port = atoi(value);
-	        } else if (strcmp(key, "SERVER_PORT") == 0) {
-		        *server_port = atoi(value);
-	        } else if (strcmp(key, "RESPONSE_SENDER") == 0) {
-		        *response_sender = atoi(value);
-	        } else if (strcmp(key, "RESPONSE_RECEIVER") == 0) {
-		        *response_receiver = atoi(value);
-	        } else if (strcmp(key, "DEVICE_NETWORK_TIMEOUT") == 0) {
-		        *dev_ntimeout = atoi(value);
-	        } else if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0) {
-		        *reset_output1_enable = atoi(value);
-	        } else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0) {
-		        *reset_output2_enable = atoi(value);
-	        }
-	    }
+        if (key && value)
+        {
+            if (strcmp(key, "RADAR_IP") == 0)
+            {
+                strncpy(radar_ip, value, INET_ADDRSTRLEN);
+            }
+            else if (strcmp(key, "RADAR_PORT") == 0)
+            {
+                *radar_port = atoi(value);
+            }
+            else if (strcmp(key, "RADAR_ALIVE_PORT") == 0)
+            {
+                *radar_alive_port = atoi(value);
+            }
+            else if (strcmp(key, "SERVER_PORT") == 0)
+            {
+                *server_port = atoi(value);
+            }
+            else if (strcmp(key, "RESPONSE_SENDER") == 0)
+            {
+                *response_sender = atoi(value);
+            }
+            else if (strcmp(key, "RESPONSE_RECEIVER") == 0)
+            {
+                *response_receiver = atoi(value);
+            }
+            else if (strcmp(key, "DEVICE_NETWORK_TIMEOUT") == 0)
+            {
+                *dev_ntimeout = atoi(value);
+            }
+            else if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0)
+            {
+                *reset_output1_enable = atoi(value);
+            }
+            else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
+            {
+                *reset_output2_enable = atoi(value);
+            }
+        }
     }
 
     fclose(file);
     return 0;
 }
 
-void *Alive(void *args) {
+void *Alive(void *args)
+{
     struct timespec sleepTime = {ALIVE_MSG_DURATION, 0};
     /*char **arguments = (char **)args;
     //int mport = atoi(arguments[2]);
@@ -209,14 +234,15 @@ void *Alive(void *args) {
     mcast.sin_family = AF_INET;
     mcast.sin_port = htons(radar_alive_port);
     mcast.sin_addr.s_addr = inet_addr(pi_ip);
-    if (bind(sock_mcast, (struct sockaddr *)&mcast, sizeof(mcast)) < 0) {
+    if (bind(sock_mcast, (struct sockaddr *)&mcast, sizeof(mcast)) < 0)
+    {
         perror("bind failed");
         exit(EXIT_FAILURE);
     }
     printf("\n[+]ALIVE Socket Activate");
 
     mcast_dest.sin_family = AF_INET;
-    mcast_dest.sin_port = htons(radar_alive_port);                     // Port of ALIVE Radar
+    mcast_dest.sin_port = htons(radar_alive_port);    // Port of ALIVE Radar
     mcast_dest.sin_addr.s_addr = inet_addr(radar_ip); // IP Address of Radar
 
     unsigned char *bytes = (unsigned char *)&mcast.sin_addr;
@@ -227,15 +253,17 @@ void *Alive(void *args) {
 
     // Put the CRC value into start[28] and start[29]
     start[28] = (m_crc >> 8) & 0xFF; // High byte
-    start[29] = m_crc & 0xFF;         // Low byte
+    start[29] = m_crc & 0xFF;        // Low byte
 
-    while (1) {
+    while (1)
+    {
         sendto(sock_mcast, start, sizeof(start), 0, (struct sockaddr *)&mcast_dest, sizeof(mcast_dest));
         nanosleep(&sleepTime, NULL);
     }
 }
 
-void *udpsocket(void *args) {
+void *udpsocket(void *args)
+{
     ThreadArgs *threadArgs = (ThreadArgs *)args;
     NetworkInfo *networkInfo = threadArgs->networkInfo;
     int radar_port = threadArgs->radar_port;
@@ -251,10 +279,13 @@ void *udpsocket(void *args) {
     initBuffer(&cb1);
     sock_raw = socket(AF_INET, SOCK_DGRAM, 0);
 
-    if (sock_raw == -1) {
+    if (sock_raw == -1)
+    {
         perror("socket");
         exit(EXIT_FAILURE);
-    } else {
+    }
+    else
+    {
         printf("\n[+]UDP Socket Active");
     }
 
@@ -262,7 +293,8 @@ void *udpsocket(void *args) {
     receiver.sin_port = htons(radar_port);
     receiver.sin_addr.s_addr = inet_addr(networkInfo->ipAddress2);
 
-    if (bind(sock_raw, (struct sockaddr *)&receiver, sizeof(receiver)) == -1) {
+    if (bind(sock_raw, (struct sockaddr *)&receiver, sizeof(receiver)) == -1)
+    {
         perror("bind");
         close(sock_raw);
         exit(EXIT_FAILURE);
@@ -272,7 +304,8 @@ void *udpsocket(void *args) {
     printf("\b\n\t |-Source IP: %s\n", inet_ntoa(receiver.sin_addr));
     SetTime();
 
-    while (1) {
+    while (1)
+    {
         stat("trace.txt", &stre);
         stre_size = stre.st_size;
 
@@ -285,10 +318,12 @@ void *udpsocket(void *args) {
         unsigned int message_type1 = (recv_buf[recv_buf[2]] << 8) | recv_buf[recv_buf[2] + 1];
         unsigned int message_type2 = (recv_buf[recv_buf[recv_buf[2] + 2] + recv_buf[2] + 3] << 8) | recv_buf[recv_buf[recv_buf[2] + 2] + recv_buf[2] + 4];
 
-        if (((data_size >= 34 && message_type1 == 0x0785) && message_type2 == 0x0785) || (data_size >= 200 && message_type1 == 0x0780)) {
-//            printf("\n\t[+]Message Type1: 0x%04X", message_type1);
-//            printf("\n\t[+]Message Type2: 0x%04X", message_type2);
-            if (rbc >= 0xFFFFFF) {
+        if (((data_size >= 34 && message_type1 == 0x0785) && message_type2 == 0x0785) || (data_size >= 200 && message_type1 == 0x0780))
+        {
+            //            printf("\n\t[+]Message Type1: 0x%04X", message_type1);
+            //            printf("\n\t[+]Message Type2: 0x%04X", message_type2);
+            if (rbc >= 0xFFFFFF)
+            {
                 rbc = 0;
                 fprintf(storefile, "\nResequence\n");
             }
@@ -322,7 +357,7 @@ void *udpsocket(void *args) {
             for (a = leng; a < (18 + data_size); a++)
                 packet[a] = recv_buf[a - leng];
             leng += data_size;
-            //printf("\ndata size: %d", data_size);
+            // printf("\ndata size: %d", data_size);
             memcpy(udp_checker, &packet[1], leng - 1);
             Crc_UDP = checksum(udp_checker, leng - 1, crc_table);
 
@@ -337,7 +372,8 @@ void *udpsocket(void *args) {
             struct tm *tm_info = localtime(&t);
             fprintf(storefile, "%s: ", asctime(tm_info));
 
-            for (a = 0; a < leng; a++) {
+            for (a = 0; a < leng; a++)
+            {
                 if (a % 8 == 0)
                     printf("\t");
                 if (a % 16 == 0)
@@ -348,7 +384,8 @@ void *udpsocket(void *args) {
             printf("\n");
             fprintf(storefile, "\n");
 
-            if (isFull(&cb1) == 1) {
+            if (isFull(&cb1) == 1)
+            {
                 printf("\n\t[-]Buffer is full. Enqueue operation failed --> Overwrite\n");
                 dequeue(&cb1, packet);
                 printf("CB count : %d", cb1.count);
@@ -356,9 +393,11 @@ void *udpsocket(void *args) {
             enqueue(&cb1, packet);
         }
 
-        if (stre_size >= 5000000000) {
+        if (stre_size >= 5000000000)
+        {
             storefile = freopen("trace.txt", "r+", fopen("trace.txt", "a"));
-            if (storefile == NULL) {
+            if (storefile == NULL)
+            {
                 perror("fopen");
                 // return -1;
             }
@@ -366,7 +405,8 @@ void *udpsocket(void *args) {
     }
 }
 
-void *SetTimeth(void *args) {
+void *SetTimeth(void *args)
+{
     sleep(15);
     SetTime();
     pthread_exit(NULL);
@@ -392,16 +432,17 @@ int main(int argc, char *argv[])
     memset(alive_args.pi_ip, 0, sizeof(alive_args.pi_ip));
     alive_args.radar_alive_port = 60000;
 
-    if (parse_config(argv[1], 
-                    alive_args.radar_ip, 
-                    &threadArgs.radar_port, 
-                    &alive_args.radar_alive_port, 
-                    &server_port,
-                    &response_sender, 
-                    &response_receiver, 
-                    &dev_ntimeout,
-                    &reset_output1_enable,
-                    &reset_output2_enable) != 0) {
+    if (parse_config(argv[1],
+                     alive_args.radar_ip,
+                     &threadArgs.radar_port,
+                     &alive_args.radar_alive_port,
+                     &server_port,
+                     &response_sender,
+                     &response_receiver,
+                     &dev_ntimeout,
+                     &reset_output1_enable,
+                     &reset_output2_enable) != 0)
+    {
         fprintf(stderr, "Failed to parse configuration file\n");
         pthread_exit(NULL);
     }
@@ -415,17 +456,24 @@ int main(int argc, char *argv[])
     net_tv.tv_usec = 0;
 
     int attempts = 0;
-    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
+    while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+    {
         snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
         fd = open(serial_port, O_RDWR | O_NOCTTY);
 
-        if (fd != -1) {
+        if (fd != -1)
+        {
             printf("Serial port %s opened successfully.\n", serial_port);
             break;
-        } else {
-            if (errno == ENOENT) {
+        }
+        else
+        {
+            if (errno == ENOENT)
+            {
                 printf("%s does not exist. Trying the next port...\n", serial_port);
-            } else {
+            }
+            else
+            {
                 perror("Error opening serial port");
                 break;
             }
@@ -433,20 +481,28 @@ int main(int argc, char *argv[])
         attempts++;
     }
 
-    if (fd == -1) { 
-    	attempts = 0;
-    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
+    if (fd == -1)
+    {
+        attempts = 0;
+        while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+        {
             snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
             fd = open(serial_port, O_RDWR | O_NOCTTY);
 
-            if (fd != -1) {
+            if (fd != -1)
+            {
                 printf("Serial port %s opened successfully.\n", serial_port);
                 close(fd);
                 break;
-            } else {
-                if (errno == ENOENT) {
+            }
+            else
+            {
+                if (errno == ENOENT)
+                {
                     printf("%s does not exist. Trying the next port...\n", serial_port);
-                } else {
+                }
+                else
+                {
                     perror("Error opening serial port");
                     break;
                 }
@@ -456,12 +512,16 @@ int main(int argc, char *argv[])
     }
 
     ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
-    if (ctx == NULL) {
+    if (ctx == NULL)
+    {
         fprintf(stderr, "Unable to create MODBUS context\n");
-    } else {
+    }
+    else
+    {
         modbus_set_slave(ctx, SLAVEID);
         mc = modbus_connect(ctx);
-        if (mc == -1) {
+        if (mc == -1)
+        {
             fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
             modbus_free(ctx);
         }
@@ -469,26 +529,31 @@ int main(int argc, char *argv[])
 
     holding_registers[0] = 50;
     int rh = modbus_write_registers(ctx, REGIS_START, 1, holding_registers);
-    
+
     modbus_set_indication_timeout(ctx, 1, 0);
     sock_serv = socket(AF_INET, SOCK_STREAM, 0);
-    if (sock_raw == -1) {
+    if (sock_raw == -1)
+    {
         perror("socket");
         return -1;
-    } else {
+    }
+    else
+    {
         printf("\n[+]Server Socket Active");
     }
 
     server.sin_family = AF_INET;
-    server.sin_port = htons(server_port);                                        /* Server-side port */
+    server.sin_port = htons(server_port);                                  /* Server-side port */
     server.sin_addr.s_addr = inet_addr(networkInfo->ipAddress1);           /* Server-side address */
-    if (bind(sock_serv, (struct sockaddr *)&server, sizeof(server)) == -1) /* Bind to eth1 */ {
+    if (bind(sock_serv, (struct sockaddr *)&server, sizeof(server)) == -1) /* Bind to eth1 */
+    {
         perror("bind");
         close(sock_serv);
         return -1;
     }
 
-    if (setsockopt(sock_serv, SOL_SOCKET, SO_RCVTIMEO, &net_tv, sizeof(net_tv)) < 0) {
+    if (setsockopt(sock_serv, SOL_SOCKET, SO_RCVTIMEO, &net_tv, sizeof(net_tv)) < 0)
+    {
         perror("\nSet socket option error!");
         close(sock_serv);
         exit(EXIT_FAILURE);
@@ -497,19 +562,22 @@ int main(int argc, char *argv[])
     strcpy(mac.ifr_name, targetInterface2);
     ioctl(sock_serv, SIOCGIFHWADDR, &mac);
     getifaddrs(&ifap);
-    for (ifa = ifap; ifa; ifa = ifa->ifa_next) {
+    for (ifa = ifap; ifa; ifa = ifa->ifa_next)
+    {
         if (ifa->ifa_addr->sa_family == AF_INET)
             sa = (struct sockaddr_in *)ifa->ifa_netmask;
     }
 
     pthread_t udpth, aliveth, stimeth;
-    if (pthread_create(&udpth, NULL, threadArgs.thread_function, (void *)&threadArgs) != 0) {
+    if (pthread_create(&udpth, NULL, threadArgs.thread_function, (void *)&threadArgs) != 0)
+    {
         perror("UDP receive thread creation failed");
         exit(EXIT_FAILURE);
     }
     usleep(2000);
 
-    if (pthread_create(&aliveth, NULL, Alive, &alive_args) != 0) {
+    if (pthread_create(&aliveth, NULL, Alive, &alive_args) != 0)
+    {
         perror("Alive thread creation failed");
         exit(EXIT_FAILURE);
     }
@@ -528,7 +596,8 @@ int main(int argc, char *argv[])
     listen(sock_serv, 5);
     printf("\nListening...");
 
-    while (1) {
+    while (1)
+    {
         FD_ZERO(&read_fds);
         FD_SET(sock_serv, &read_fds);
         net_tv.tv_sec = dev_ntimeout;
@@ -537,56 +606,68 @@ int main(int argc, char *argv[])
         nready = select(sock_serv + 1, &read_fds, NULL, NULL, &net_tv);
         usleep(100);
 
-        if (nready == -1) {
+        if (nready == -1)
+        {
             perror("Select error");
             exit(EXIT_FAILURE);
-        } else if (nready == 0) {
+        }
+        else if (nready == 0)
+        {
             printf("\nNo new connections for %d seconds. Timing out...\n", dev_ntimeout);
             close(newfd);
             printf("\nListening...\n");
         }
 
-	    if (FD_ISSET(sock_serv, &read_fds)) {
+        if (FD_ISSET(sock_serv, &read_fds))
+        {
             addrlen = sizeof(server);
             newfd = accept(sock_serv, (struct sockaddr *)&server, &addrlen);
             printf("\n\t[+]Client accepted");
 
-            while (1) {
+            while (1)
+            {
                 stimeout.tv_sec = 0;
                 stimeout.tv_usec = 80000;
                 gettimeofday(&tv, NULL);
                 tm = ((long long)tv.tv_sec * 1000) + (tv.tv_usec / 1000);
 
-		        while (!isEmpty(&cb1)) {
-		            int connected;
-    		        socklen_t connected_len = sizeof(connected);
-    		        if (getsockopt(newfd, SOL_SOCKET, SO_ERROR, &connected, &connected_len) == -1) {
-        	    	    perror("getsockopt");
-        	    	    close(newfd);
-        	    	    exit(EXIT_FAILURE);
-    		        }
+                while (!isEmpty(&cb1))
+                {
+                    int connected;
+                    socklen_t connected_len = sizeof(connected);
+                    if (getsockopt(newfd, SOL_SOCKET, SO_ERROR, &connected, &connected_len) == -1)
+                    {
+                        perror("getsockopt");
+                        close(newfd);
+                        exit(EXIT_FAILURE);
+                    }
 
-		            if (connected != 0) {
-		    	        printf("\nConnection lost\n");
-		    	        close(newfd);
-		    	        break;
-		            } else {
-            	    	memset(bu_buf, '\0', BUF_SIZ);
-            	    	printf("\n\t[+]We have unsent data");
-            	    	dequeue(&cb1, bu_buf);
-            	    	send(newfd, bu_buf, bu_buf[1] << 8 | bu_buf[2], 0);
-		    	        printf(" --> SENT!!\nCB count : %d\n", cb1.count);
-		            }
-  	            }
+                    if (connected != 0)
+                    {
+                        printf("\nConnection lost\n");
+                        close(newfd);
+                        break;
+                    }
+                    else
+                    {
+                        memset(bu_buf, '\0', BUF_SIZ);
+                        printf("\n\t[+]We have unsent data");
+                        dequeue(&cb1, bu_buf);
+                        send(newfd, bu_buf, bu_buf[1] << 8 | bu_buf[2], 0);
+                        printf(" --> SENT!!\nCB count : %d\n", cb1.count);
+                    }
+                }
 
-                if (setsockopt(newfd, SOL_SOCKET, SO_RCVTIMEO, &stimeout, sizeof(stimeout)) < 0) {
+                if (setsockopt(newfd, SOL_SOCKET, SO_RCVTIMEO, &stimeout, sizeof(stimeout)) < 0)
+                {
                     perror("\n[-]Error: Unable to set socket timeout");
                     break;
                 }
 
                 memset(client_buf, '\0', BUF_SIZ);
                 nbytes = recv(newfd, client_buf, sizeof(client_buf), 0);
-                if (nbytes > 0) {
+                if (nbytes > 0)
+                {
                     memset(checker, '\0', BUF_SIZ);
                     memset(tcp_pack, '\0', BUF_SIZ);
                     memset(val_buf, '\0', BUF_SIZ);
@@ -603,340 +684,392 @@ int main(int argc, char *argv[])
                     tcp_pack[1] = 0x00;
                     tcp_pack[3] = dev_addr[0];
                     tcp_pack[4] = dev_addr[1];
-                    if ((crc_buf[1] == client_buf[nbytes - 3]) && (crc_buf[0] == client_buf[nbytes - 2])) {
+                    if ((crc_buf[1] == client_buf[nbytes - 3]) && (crc_buf[0] == client_buf[nbytes - 2]))
+                    {
                         if (msg_counter >= 0xFFFFFF)
                             msg_counter = 0;
 
                         printf(" --> CRC Correct!!");
                         printf("\n\t[+]Command %02X", client_buf[13]);
-                        //tcp_pack[4] = client_buf[3];
+                        // tcp_pack[4] = client_buf[3];
                         switch (client_buf[13])
                         {
-                            case 1:
-                            case 2:
+                        case 1:
+                        case 2:
+                        {
+                            int isDeviceInfoRequest = (client_buf[13] == 01);
+                            printf(" --> %s request", isDeviceInfoRequest ? "Device info" : "Life message");
+                            tcp_pack[2] = isDeviceInfoRequest ? 0x32 : 0x15;
+                            b = 5;
+                            memcpy(&tm_buf, &tm, 8);
+                            for (i = 8; i > 0; i--)
+                                tcp_pack[b + (8 - i)] = tm_buf[i - 1];
+                            b += 8;
+                            tcp_pack[b++] = isDeviceInfoRequest ? 0x01 : 0x02;
+                            msg_counter++;
+                            memcpy(&seq_buf, &msg_counter, 3);
+                            for (i = 3; i > 0; i--)
+                                tcp_pack[b + (3 - i)] = seq_buf[i - 1];
+                            b += 3;
+
+                            if (!isDeviceInfoRequest)
                             {
-                                int isDeviceInfoRequest = (client_buf[13] == 01);
-                                printf(" --> %s request", isDeviceInfoRequest ? "Device info" : "Life message");
-                                tcp_pack[2] = isDeviceInfoRequest ? 0x32 : 0x15;
-                                b = 5;
-                                memcpy(&tm_buf, &tm, 8);
-                                for (i = 8; i > 0; i--)
-                                    tcp_pack[b + (8 - i)] = tm_buf[i - 1];
-                                b += 8;
-                                tcp_pack[b++] = isDeviceInfoRequest ? 0x01 : 0x02;
-                                msg_counter++;
-                                memcpy(&seq_buf, &msg_counter, 3);
-                                for (i = 3; i > 0; i--)
-                                    tcp_pack[b + (3 - i)] = seq_buf[i - 1];
-                                b += 3;
-
-                                if (!isDeviceInfoRequest) {
-                                    stimeout.tv_sec = 0;
-                                    stimeout.tv_usec = 80000;
-                                    if (setsockopt(sock_raw, SOL_SOCKET, SO_RCVTIMEO, &stimeout, sizeof(stimeout)) < 0) {
-                                        perror("\n[-]Error: Unable to set socket timeout");
-                                        close(sock_raw);
-                                        exit(EXIT_FAILURE);
-                                    }
-
-                                    int online = recvfrom(sock_raw, recv_buf, BUF_SIZ, 0, (struct sockaddr *)&receiver, &receiver_size);
-                                    if (online < 0) {
-                                        tcp_pack[b++] = 0x03;
-                                        printf(" --> Radar Offline\n");
-                                    } else {
-                                        tcp_pack[b++] = 0x02;
-                                        printf(" --> Radar Online\n");
-                                    }
-                                } else {
-                                    tcp_pack[b++] = 0x01;
-                                    printf("\t\t |-Version: ");
-                                    memcpy(&ver_buf, &dev_ver, 2);
-                                    for (i = 2; i > 0; i--)
-                                        tcp_pack[b + (2 - i)] = ver_buf[i - 1];
-                                    printf("%d ", tcp_pack[b] << 8 | tcp_pack[b + 1]);
-                                    b += 2;
-                                    memcpy(&tcp_pack[b], &mac.ifr_addr.sa_data, 6);
-                                    printf("\n\t\t |-MAC Address: %02X", (unsigned char)mac.ifr_addr.sa_data[0]);
-                                    for (i = 1; i < 6; ++i)
-                                        printf("-%02X", (unsigned char)mac.ifr_addr.sa_data[i]);
-                                    b += 6;
-                                    printf("\b\n\t\t |-Source IP: %s", inet_ntoa(server.sin_addr));
-                                    memcpy(&tcp_pack[b], &server.sin_addr.s_addr, 4);
-                                    b += 4;
-                                    printf("\n\t\t |-Subnet Mask: %s", inet_ntoa(sa->sin_addr));
-                                    memcpy(&tcp_pack[b], &sa->sin_addr.s_addr, 4);
-                                    b += 4;
-                                    for (i = 0; i < 4; i++)
-                                        tcp_pack[b + i] = atoi(networkInfo->gateway[i]);
-                                    printf("\n\t\t |-Gateway: %d.%d.%d.%d", tcp_pack[b], tcp_pack[b + 1], tcp_pack[b + 2], tcp_pack[b + 3]);
-                                    b += 4;
-                                    memcpy(&tcp_pack[b], &dev_dns, 4);
-                                    printf("\n\t\t |-DNS: %d", tcp_pack[b + 3]);
-                                    for (i = b + 2; i >= b; i--)
-                                        printf(".%d", tcp_pack[i]);
-                                    b += 4;
-                                    memcpy(&tcp_pack[b], &server.sin_port, 2);
-                                    printf("\n\t\t |-Port: %d", ntohs(server.sin_port));
-                                    b += 2;
-                                    printf("\n\t\t |-Network Timeout: %d\n", dev_ntimeout);
-                                    tcp_pack[b++] = dev_ntimeout;
-                                }
-
-                                memcpy(checker, &tcp_pack[1], b - 1);
-                                Crc_Byte = checksum(checker, b - 1, crc_table);
-                                memcpy(&crc_buf, &Crc_Byte, 2);
-                                for (i = 2; i > 0; i--)
-                                    tcp_pack[b + (2 - i)] = crc_buf[i - 1];
-                                b += 2;
-                                tcp_pack[b++] = 0x03;
-                                send(newfd, tcp_pack, b, 0);
-                                break;
-                            }
-                            case 4:
-                                printf(" --> Input voltage monitoring request");
-                                tcp_pack[2] = 0x17;
-                                b = 5;
-                                memcpy(&tm_buf, &tm, 8);
-                                for (i = 8; i > 0; i--)
-                                    tcp_pack[b + 8 - i] = tm_buf[i - 1];
-                                b += 8;
-                                tcp_pack[b++] = 0x04;
-                                msg_counter++;
-                                memcpy(&seq_buf, &msg_counter, 3);
-                                for (i = 3; i > 0; i--)
-                                    tcp_pack[b + 3 - i] = seq_buf[i - 1];
-                                b += 3;
-                                if (ctx == NULL || mc == -1) {
-                                    if (ctx == NULL)
-                                        printf("\n\t[-]ERROR!! --> No device connected on %s", serial_port);
-
-                                    if (mc == -1)
-                                        printf("\n\t[-]ERROR!! --> Can't connect to I/O!!\n");
-
-                                    tcp_pack[b++] = 0x07;
-                                    tcp_pack[b++] = 0x00;
-                                    tcp_pack[b++] = 0x00;
-                                    attempts = 0;
-                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
-                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
-                                        if (fd != -1) {
-                                            printf("\n\t[+]Serial port %s opened successfully.", serial_port);
-                                            break;
-                                        } else {
-                                            if (errno == ENOENT)
-                                                printf("\n\t | %s does not exist. Trying the next port...", serial_port);
-                                            else {
-                                                perror("Error opening serial port");
-                                                break;
-                                            }   
-                                        }
-                                        attempts++;
-                                    }
-
-				    if (fd == -1) {
-				    	attempts = 0;
-                                    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                            snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-                                            fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-                                            if (fd != -1) {
-                                        	printf("Serial port %s opened successfully.\n", serial_port);
-                                            	close(fd); // Close the file descriptor if needed
-                                            	break;
-                                            } else {
-                                            	if (errno == ENOENT) {
-                                                    printf("%s does not exist. Trying the next port...\n", serial_port);
-                                            	} else {
-                                                    perror("Error opening serial port");
-                                                    break;
-                                            	}
-                                            }
-                                            attempts++;
-                                        }
-				    }
-					
-                                    ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
-                                    if (ctx == NULL)
-                                        fprintf(stderr, "Unable to create MODBUS context\n");
-                                    else {
-                                        modbus_set_slave(ctx, SLAVEID);
-                                        mc = modbus_connect(ctx);
-                                        if (mc == -1) {
-                                            fprintf(stderr, "\n\t[-]Connection failed: %s\n", modbus_strerror(errno));
-                                            modbus_free(ctx);
-                                        }
-                                    }
-                                }
-
-                                int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
-                                if (ri == -1) {
-                                    fprintf(stderr, "\n[-]MODBUS read error: %s\n", modbus_strerror(errno));
-                                    tcp_pack[b++] = 0x06;
-                                    tcp_pack[b++] = 0x00;
-                                    tcp_pack[b++] = 0x00;
-                                    ctx = NULL;
-                                } else {
-                                    printf("\n\t |-Received data from registers: ");
-                                    tcp_pack[b++] = 0x01;
-                                    float voltage = 0;
-                                    for (int i = 0; i < REGIS_COUNT; i++) {
-                                        voltage = (input_registers[i] / 400) * 24;
-                                        //voltage = (voltage/ 1024) * 61;
-                                        printf("\t\t\nInput Voltage CH%d = %u ", i + 1, (int)voltage);
-                                        tcp_pack[b++] = (int)voltage;
-				    }
-                                }
-
-                                memcpy(checker, &tcp_pack[1], b - 1);
-                                Crc_Byte = checksum(checker, b - 1, crc_table);
-                                memcpy(&crc_buf, &Crc_Byte, 2);
-                                for (i = 2; i > 0; i--)
-                                    tcp_pack[b + 2 - i] = crc_buf[i - 1];
-                                b += 2;
-                                tcp_pack[b++] = 0x03;
-                                send(newfd, tcp_pack, b, 0);
-			        break;
-                            case 5:
-                                printf(" --> Power reset request");
-                                tcp_pack[2] = 0x16;
-                                b = 5;
-                                memcpy(&tm_buf, &tm, 8);
-                                for (i = 8; i > 0; i--)
-                                    tcp_pack[b + 8 - i] = tm_buf[i - 1];
-                                b += 8;
-                                tcp_pack[b++] = 0x05;
-                                msg_counter++;
-                                memcpy(&seq_buf, &msg_counter, 3);
-                                for (i = 3; i > 0; i--)
-                                    tcp_pack[b + 3 - i] = seq_buf[i - 1];
-                                b += 3;
-
-                                if (ctx == NULL || mc == -1) {
-                                    if (ctx == NULL)
-                                        printf("\n\t[-]ERROR!! --> No device connected on /dev/ttyUSB");
-
-                                    if (mc == -1)
-                                        printf("\n\t[-]ERROR!! --> Can't connect to I/O!!\n");
-
-                                    tcp_pack[b++] = 0x07;
-                                    tcp_pack[b++] = 0x00;
-
-                                    attempts = 0;
-                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
-                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-                                        if (fd != -1) {
-                                            printf("Serial port %s opened successfully.\n", serial_port);
-                                            break;
-                                        } else {
-                                            if (errno == ENOENT)
-                                                printf("%s does not exist. Trying the next port...\n", serial_port);
-                                            else {
-                                                perror("Error opening serial port");
-                                                break;
-                                            }
-                                        }
-                                        attempts++;
-                                    }
-
-				    if (fd == -1) {
-				    	attempts = 0;
-                                    	while (attempts < MAX_SERIAL_PORT_ATTEMPTS) {
-                                            snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-                                            fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-                                            if (fd != -1) {
-                                            	printf("Serial port %s opened successfully.\n", serial_port);
-                                            	close(fd); // Close the file descriptor if needed
-                                        	break;
-                                            } else {
-                                            	if (errno == ENOENT) {
-                                                    printf("%s does not exist. Trying the next port...\n", serial_port);
-                                                } else {
-                                                    perror("Error opening serial port");
-                                                    break;
-                                                }
-                                            }
-                                            attempts++;
-                                        }
-				    }
-					
-                                    ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
-                                    if (ctx == NULL) {
-                                        fprintf(stderr, "Unable to create MODBUS context\n");
-                                    } else {
-                                        modbus_set_slave(ctx, SLAVEID);
-                                        mc = modbus_connect(ctx);
-                                        if (mc == -1) {
-                                            fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
-                                            modbus_free(ctx);
-                                        }
-                                        modbus_set_indication_timeout(ctx, 1, 0);
-                                    }
-                                }
-
-                                coils[0] = reset_output1_enable;
-                                coils[1] = reset_output2_enable;
-                                int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
-                                if (rcw == -1) {
-                                    fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));
-                                    tcp_pack[b++] = 0x06;
-                                    tcp_pack[b++] = 0x00;
-                                    ctx = NULL;
-                                } else {
-                                    tcp_pack[b++] = 0x01;
-                                    printf("\n\t |-Write data to coils: ");
-                                    for (int i = 0; i < REGIS_COUNT; i++)
-                                        printf("Write Status %d :%u ", i + 1, coils[i]);
-
-                                    tcp_pack[b++] = coils[1] << 1 | coils[0];
-                                }
-
-                                memcpy(checker, &tcp_pack[1], b - 1);
-                                Crc_Byte = checksum(checker, b - 1, crc_table);
-                                memcpy(&crc_buf, &Crc_Byte, 2);
-                                for (i = 2; i > 0; i--)
-                                    tcp_pack[b + (2 - i)] = crc_buf[i - 1];
-                                b += 2;
-                                tcp_pack[b++] = 0x03;
-                                send(newfd, tcp_pack, b, 0);
-
-			                    if (pthread_create(&stimeth, NULL, SetTimeth, NULL) != 0) {
-                                    perror("Set time  thread creation failed");
+                                stimeout.tv_sec = 0;
+                                stimeout.tv_usec = 80000;
+                                if (setsockopt(sock_raw, SOL_SOCKET, SO_RCVTIMEO, &stimeout, sizeof(stimeout)) < 0)
+                                {
+                                    perror("\n[-]Error: Unable to set socket timeout");
+                                    close(sock_raw);
                                     exit(EXIT_FAILURE);
                                 }
-			                    break;
-                            default:
-                                printf(" --> Command Unmatched??\n");
-                                tcp_pack[2] = 0x15;
-                                b = 5;
-                                memcpy(&tm_buf, &tm, 8);
-                                for (i = 8; i > 0; i--)
-                                    tcp_pack[b + 8 - i] = tm_buf[i - 1];
-                                b += 8;
 
-                                tcp_pack[b++] = client_buf[13];
-                                msg_counter++;
-                                memcpy(&seq_buf, &msg_counter, 3);
-                                for (i = 3; i > 0; i--)
-                                    tcp_pack[b + 3 - i] = seq_buf[i - 1];
-                                b += 3;
-
-                                tcp_pack[b++] = 0x08;
-
-                                memcpy(checker, &tcp_pack[1], b - 1);
-                                Crc_Byte = checksum(checker, b - 1, crc_table);
-                                memcpy(&crc_buf, &Crc_Byte, 2);
+                                int online = recvfrom(sock_raw, recv_buf, BUF_SIZ, 0, (struct sockaddr *)&receiver, &receiver_size);
+                                if (online < 0)
+                                {
+                                    tcp_pack[b++] = 0x03;
+                                    printf(" --> Radar Offline\n");
+                                }
+                                else
+                                {
+                                    tcp_pack[b++] = 0x02;
+                                    printf(" --> Radar Online\n");
+                                }
+                            }
+                            else
+                            {
+                                tcp_pack[b++] = 0x01;
+                                printf("\t\t |-Version: ");
+                                memcpy(&ver_buf, &dev_ver, 2);
                                 for (i = 2; i > 0; i--)
-                                    tcp_pack[b + (2 - i)] = crc_buf[i - 1];
+                                    tcp_pack[b + (2 - i)] = ver_buf[i - 1];
+                                printf("%d ", tcp_pack[b] << 8 | tcp_pack[b + 1]);
                                 b += 2;
-                                tcp_pack[b++] = 0x03;
-                                send(newfd, tcp_pack, b, 0);
-			                    break;
+                                memcpy(&tcp_pack[b], &mac.ifr_addr.sa_data, 6);
+                                printf("\n\t\t |-MAC Address: %02X", (unsigned char)mac.ifr_addr.sa_data[0]);
+                                for (i = 1; i < 6; ++i)
+                                    printf("-%02X", (unsigned char)mac.ifr_addr.sa_data[i]);
+                                b += 6;
+                                printf("\b\n\t\t |-Source IP: %s", inet_ntoa(server.sin_addr));
+                                memcpy(&tcp_pack[b], &server.sin_addr.s_addr, 4);
+                                b += 4;
+                                printf("\n\t\t |-Subnet Mask: %s", inet_ntoa(sa->sin_addr));
+                                memcpy(&tcp_pack[b], &sa->sin_addr.s_addr, 4);
+                                b += 4;
+                                for (i = 0; i < 4; i++)
+                                    tcp_pack[b + i] = atoi(networkInfo->gateway[i]);
+                                printf("\n\t\t |-Gateway: %d.%d.%d.%d", tcp_pack[b], tcp_pack[b + 1], tcp_pack[b + 2], tcp_pack[b + 3]);
+                                b += 4;
+                                memcpy(&tcp_pack[b], &dev_dns, 4);
+                                printf("\n\t\t |-DNS: %d", tcp_pack[b + 3]);
+                                for (i = b + 2; i >= b; i--)
+                                    printf(".%d", tcp_pack[i]);
+                                b += 4;
+                                memcpy(&tcp_pack[b], &server.sin_port, 2);
+                                printf("\n\t\t |-Port: %d", ntohs(server.sin_port));
+                                b += 2;
+                                printf("\n\t\t |-Network Timeout: %d\n", dev_ntimeout);
+                                tcp_pack[b++] = dev_ntimeout;
+                            }
+
+                            memcpy(checker, &tcp_pack[1], b - 1);
+                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            memcpy(&crc_buf, &Crc_Byte, 2);
+                            for (i = 2; i > 0; i--)
+                                tcp_pack[b + (2 - i)] = crc_buf[i - 1];
+                            b += 2;
+                            tcp_pack[b++] = 0x03;
+                            send(newfd, tcp_pack, b, 0);
+                            break;
                         }
-                    } else {
+                        case 4:
+                            printf(" --> Input voltage monitoring request");
+                            tcp_pack[2] = 0x17;
+                            b = 5;
+                            memcpy(&tm_buf, &tm, 8);
+                            for (i = 8; i > 0; i--)
+                                tcp_pack[b + 8 - i] = tm_buf[i - 1];
+                            b += 8;
+                            tcp_pack[b++] = 0x04;
+                            msg_counter++;
+                            memcpy(&seq_buf, &msg_counter, 3);
+                            for (i = 3; i > 0; i--)
+                                tcp_pack[b + 3 - i] = seq_buf[i - 1];
+                            b += 3;
+                            if (ctx == NULL || mc == -1)
+                            {
+                                if (ctx == NULL)
+                                    printf("\n\t[-]ERROR!! --> No device connected on %s", serial_port);
+
+                                if (mc == -1)
+                                    printf("\n\t[-]ERROR!! --> Can't connect to I/O!!\n");
+
+                                tcp_pack[b++] = 0x07;
+                                tcp_pack[b++] = 0x00;
+                                tcp_pack[b++] = 0x00;
+                                attempts = 0;
+                                while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+                                {
+                                    snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
+                                    fd = open(serial_port, O_RDWR | O_NOCTTY);
+                                    if (fd != -1)
+                                    {
+                                        printf("\n\t[+]Serial port %s opened successfully.", serial_port);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        if (errno == ENOENT)
+                                            printf("\n\t | %s does not exist. Trying the next port...", serial_port);
+                                        else
+                                        {
+                                            perror("Error opening serial port");
+                                            break;
+                                        }
+                                    }
+                                    attempts++;
+                                }
+
+                                if (fd == -1)
+                                {
+                                    attempts = 0;
+                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+                                    {
+                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
+                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
+
+                                        if (fd != -1)
+                                        {
+                                            printf("Serial port %s opened successfully.\n", serial_port);
+                                            close(fd); // Close the file descriptor if needed
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (errno == ENOENT)
+                                            {
+                                                printf("%s does not exist. Trying the next port...\n", serial_port);
+                                            }
+                                            else
+                                            {
+                                                perror("Error opening serial port");
+                                                break;
+                                            }
+                                        }
+                                        attempts++;
+                                    }
+                                }
+
+                                ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
+                                if (ctx == NULL)
+                                    fprintf(stderr, "Unable to create MODBUS context\n");
+                                else
+                                {
+                                    modbus_set_slave(ctx, SLAVEID);
+                                    mc = modbus_connect(ctx);
+                                    if (mc == -1)
+                                    {
+                                        fprintf(stderr, "\n\t[-]Connection failed: %s\n", modbus_strerror(errno));
+                                        modbus_free(ctx);
+                                    }
+                                }
+                            }
+
+                            int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
+                            if (ri == -1)
+                            {
+                                fprintf(stderr, "\n[-]MODBUS read error: %s\n", modbus_strerror(errno));
+                                tcp_pack[b++] = 0x06;
+                                tcp_pack[b++] = 0x00;
+                                tcp_pack[b++] = 0x00;
+                                ctx = NULL;
+                            }
+                            else
+                            {
+                                printf("\n\t |-Received data from registers: ");
+                                tcp_pack[b++] = 0x01;
+                                float voltage = 0;
+                                for (int i = 0; i < REGIS_COUNT; i++)
+                                {
+                                    voltage = (input_registers[i] / 400) * 24;
+                                    // voltage = (voltage/ 1024) * 61;
+                                    printf("\t\t\nInput Voltage CH%d = %u ", i + 1, (int)voltage);
+                                    tcp_pack[b++] = (int)voltage;
+                                }
+                            }
+
+                            memcpy(checker, &tcp_pack[1], b - 1);
+                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            memcpy(&crc_buf, &Crc_Byte, 2);
+                            for (i = 2; i > 0; i--)
+                                tcp_pack[b + 2 - i] = crc_buf[i - 1];
+                            b += 2;
+                            tcp_pack[b++] = 0x03;
+                            send(newfd, tcp_pack, b, 0);
+                            break;
+                        case 5:
+                            printf(" --> Power reset request");
+                            tcp_pack[2] = 0x16;
+                            b = 5;
+                            memcpy(&tm_buf, &tm, 8);
+                            for (i = 8; i > 0; i--)
+                                tcp_pack[b + 8 - i] = tm_buf[i - 1];
+                            b += 8;
+                            tcp_pack[b++] = 0x05;
+                            msg_counter++;
+                            memcpy(&seq_buf, &msg_counter, 3);
+                            for (i = 3; i > 0; i--)
+                                tcp_pack[b + 3 - i] = seq_buf[i - 1];
+                            b += 3;
+
+                            if (ctx == NULL || mc == -1)
+                            {
+                                if (ctx == NULL)
+                                    printf("\n\t[-]ERROR!! --> No device connected on /dev/ttyUSB");
+
+                                if (mc == -1)
+                                    printf("\n\t[-]ERROR!! --> Can't connect to I/O!!\n");
+
+                                tcp_pack[b++] = 0x07;
+                                tcp_pack[b++] = 0x00;
+
+                                attempts = 0;
+                                while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+                                {
+                                    snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
+                                    fd = open(serial_port, O_RDWR | O_NOCTTY);
+
+                                    if (fd != -1)
+                                    {
+                                        printf("Serial port %s opened successfully.\n", serial_port);
+                                        break;
+                                    }
+                                    else
+                                    {
+                                        if (errno == ENOENT)
+                                            printf("%s does not exist. Trying the next port...\n", serial_port);
+                                        else
+                                        {
+                                            perror("Error opening serial port");
+                                            break;
+                                        }
+                                    }
+                                    attempts++;
+                                }
+
+                                if (fd == -1)
+                                {
+                                    attempts = 0;
+                                    while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+                                    {
+                                        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
+                                        fd = open(serial_port, O_RDWR | O_NOCTTY);
+
+                                        if (fd != -1)
+                                        {
+                                            printf("Serial port %s opened successfully.\n", serial_port);
+                                            close(fd); // Close the file descriptor if needed
+                                            break;
+                                        }
+                                        else
+                                        {
+                                            if (errno == ENOENT)
+                                            {
+                                                printf("%s does not exist. Trying the next port...\n", serial_port);
+                                            }
+                                            else
+                                            {
+                                                perror("Error opening serial port");
+                                                break;
+                                            }
+                                        }
+                                        attempts++;
+                                    }
+                                }
+
+                                ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
+                                if (ctx == NULL)
+                                {
+                                    fprintf(stderr, "Unable to create MODBUS context\n");
+                                }
+                                else
+                                {
+                                    modbus_set_slave(ctx, SLAVEID);
+                                    mc = modbus_connect(ctx);
+                                    if (mc == -1)
+                                    {
+                                        fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
+                                        modbus_free(ctx);
+                                    }
+                                    modbus_set_indication_timeout(ctx, 1, 0);
+                                }
+                            }
+
+                            coils[0] = reset_output1_enable;
+                            coils[1] = reset_output2_enable;
+                            int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
+                            if (rcw == -1)
+                            {
+                                fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));
+                                tcp_pack[b++] = 0x06;
+                                tcp_pack[b++] = 0x00;
+                                ctx = NULL;
+                            }
+                            else
+                            {
+                                tcp_pack[b++] = 0x01;
+                                printf("\n\t |-Write data to coils: ");
+                                for (int i = 0; i < REGIS_COUNT; i++)
+                                    printf("Write Status %d :%u ", i + 1, coils[i]);
+
+                                tcp_pack[b++] = coils[1] << 1 | coils[0];
+                            }
+
+                            memcpy(checker, &tcp_pack[1], b - 1);
+                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            memcpy(&crc_buf, &Crc_Byte, 2);
+                            for (i = 2; i > 0; i--)
+                                tcp_pack[b + (2 - i)] = crc_buf[i - 1];
+                            b += 2;
+                            tcp_pack[b++] = 0x03;
+                            send(newfd, tcp_pack, b, 0);
+
+                            if (pthread_create(&stimeth, NULL, SetTimeth, NULL) != 0)
+                            {
+                                perror("Set time  thread creation failed");
+                                exit(EXIT_FAILURE);
+                            }
+                            break;
+                        default:
+                            printf(" --> Command Unmatched??\n");
+                            tcp_pack[2] = 0x15;
+                            b = 5;
+                            memcpy(&tm_buf, &tm, 8);
+                            for (i = 8; i > 0; i--)
+                                tcp_pack[b + 8 - i] = tm_buf[i - 1];
+                            b += 8;
+
+                            tcp_pack[b++] = client_buf[13];
+                            msg_counter++;
+                            memcpy(&seq_buf, &msg_counter, 3);
+                            for (i = 3; i > 0; i--)
+                                tcp_pack[b + 3 - i] = seq_buf[i - 1];
+                            b += 3;
+
+                            tcp_pack[b++] = 0x08;
+
+                            memcpy(checker, &tcp_pack[1], b - 1);
+                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            memcpy(&crc_buf, &Crc_Byte, 2);
+                            for (i = 2; i > 0; i--)
+                                tcp_pack[b + (2 - i)] = crc_buf[i - 1];
+                            b += 2;
+                            tcp_pack[b++] = 0x03;
+                            send(newfd, tcp_pack, b, 0);
+                            break;
+                        }
+                    }
+                    else
+                    {
                         printf(" --> [-]CRC Invalid!!\n\n");
                         tcp_pack[2] = 0x15;
                         b = 5;
@@ -958,9 +1091,10 @@ int main(int argc, char *argv[])
                         b += 2;
                         tcp_pack[b++] = 0x03;
                         send(newfd, tcp_pack, b, 0);
-			            break;
+                        break;
                     }
-                }  else if (nbytes == 0)
+                }
+                else if (nbytes == 0)
                     break;
             }
         }
