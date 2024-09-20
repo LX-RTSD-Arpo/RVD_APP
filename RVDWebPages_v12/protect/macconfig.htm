@@ -1,0 +1,38 @@
+~inc:header.inc~
+<div id="content">
+<form method="post" action="/protect/tcpip.htm" name="tcpip"><div class="examplebox">
+  <table align="center">
+<tr><td width="240"><b>MAC Address:</b></td>
+<td><input type="text" maxlength="17" name="mac" value="~config_mac~" /></td></tr>
+<tr>
+<td height="25" colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+</tr>
+<tr>
+  <td width="172" align="left" valign="middle"></td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+<div align="center">
+  <input type="submit" value="-- Update Settings --" />
+</div>
+</div>
+</form>
+
+<script language="javascript">
+
+function configIPBoxes() {
+	
+}
+
+configIPBoxes();
+
+</script>
+
+</div>
+
+<script type="text/javascript">
+document.getElementById('hello').innerHTML = "~hellomsg~";
+</script>
+
+~inc:footer.inc~

@@ -1,0 +1,44 @@
+~inc:header.inc~
+<div id="content">
+<form method="post" action="/protect/control.htm" name="control">
+<div class="examplebox">
+<table align="center">
+<tr><td width="260"><b>Relay Control</b></td></tr>
+<tr>
+<td height="25" colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+</tr>
+<tr><td colspan="2"><b>Relay 1 Control:</b></td>
+<td width="125" height="25">
+<select style="width:160px" id="select" name="Relay01">
+<option value="1" ~io_relay01~>ON</option>
+<option value="2" ~io_relay01~>OFF</option>	
+</select></td></tr>
+<tr><td colspan="2"><b>Relay 2 Control:</b></td>
+<td width="125" height="25">
+<select style="width:160px" id="select" name="Relay02">
+<option value="1" ~io_relay02~>ON</option>
+<option value="2" ~io_relay02~>OFF</option>	
+</select></td></tr>
+<tr>
+  <td colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+  </tr>
+<tr>
+  <td width="172" align="left" valign="middle"></td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+<div align="center">
+  <input type="submit" value="-- Save --" />
+</div>
+</div>
+</form>
+
+</div>
+
+<script type="text/javascript">
+document.getElementById('hello').innerHTML = "~hellomsg~";
+</script>
+
+~inc:footer.inc~

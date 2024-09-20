@@ -1,0 +1,52 @@
+~inc:header.inc~
+<div id="content">
+<form method="post" action="/protect/tcpip.htm" name="tcpip">
+<div class="examplebox">
+<table align="center">
+<tr><td><b>Host Name:</b></td>
+<td><input type="text" maxlength="15" name="host" value="~config_hostname~" /></td></tr>
+<tr><td>&nbsp;</td><td></td></tr>
+<tr><td></td>
+<td></td></tr>
+<tr><td width="200"><b>IP Address:</b></td>
+<td width="150" ><input type="text" maxlength="15" name="ip" value="~config_ip~" /></td></tr>
+<tr><td><b>Gateway:</b></td>
+<td><input type="text" maxlength="15" name="gw" value="~config_gw~" /></td></tr>
+<tr><td><b>Subnet Mask:</b></td>
+<td><input type="text" maxlength="15" name="subnet" value="~config_subnet~" /></td></tr>
+<tr><td><b>Primary DNS:</b></td>
+<td><input type="text" maxlength="15" name="dns1" value="~config_dns1~" /></td></tr>
+<tr><td><b>Secondary DNS:</b></td>
+<td><input type="text" maxlength="15" name="dns2" value="~config_dns2~" /></td></tr>
+<tr>
+<td height="25" colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+</tr>
+<tr>
+  <td width="172" align="left" valign="middle"></td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+<div align="center">
+  <input type="submit" value="-- Update Settings --" />
+</div>
+</div>
+</form>
+
+<script language="javascript">
+
+function configIPBoxes() {
+	
+}
+
+configIPBoxes();
+
+</script>
+
+</div>
+
+<script type="text/javascript">
+document.getElementById('hello').innerHTML = "~hellomsg~";
+</script>
+
+~inc:footer.inc~

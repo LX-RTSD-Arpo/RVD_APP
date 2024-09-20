@@ -1,0 +1,5 @@
+<?xml version="1.0" encoding="utf-8"?>
+<response>
+<fStatus>~fw_status~</fStatus>
+<bdStatusA>~bd_status_a~</bdStatusA>
+</response>

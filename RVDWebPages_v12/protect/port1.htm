@@ -1,0 +1,85 @@
+~inc:header.inc~
+<div id="content">
+<form method="post" action="/protect/port1.htm" name="port1">
+<div class="examplebox">
+<table align="center">
+<tr><td width="260"><b>RS232 Settings (Null Modem)</b></td></tr>
+<tr>
+<td height="25" colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+</tr>
+<tr><td colspan="2"><b>Bits per second:</b></td>
+<td width="125" height="25">
+<select style="width:160px" id="select" name="BaudCom1">
+<option value="1" ~config_BaudCom1~>600</option>
+<option value="2" ~config_BaudCom1~>1200</option>	
+<option value="3" ~config_BaudCom1~>2400</option>	
+<option value="4" ~config_BaudCom1~>4800</option>
+<option value="5" ~config_BaudCom1~>9600</option>	
+<option value="6" ~config_BaudCom1~>19200</option>
+<option value="7" ~config_BaudCom1~>38400</option>
+<option value="8" ~config_BaudCom1~>57600</option>
+<option value="9" ~config_BaudCom1~>115200</option>
+</select></td></tr>
+<tr><td colspan="2"><b>Data bits:</b></td>
+<td height="25"><select style="width:160px" id="select" name="DataCom1">
+<option value="1" ~config_DataCom1~>7</option>
+<option value="2" ~config_DataCom1~>8</option>	
+</select></td></tr>
+<tr><td colspan="2"><b>Parity:</b></td>
+<td height="25"><select style="width:160px" id="select" name="ParityCom1">
+<option value="1" ~config_ParityCom1~>Even</option>
+<option value="2" ~config_ParityCom1~>Odd</option>	
+<option value="3" ~config_ParityCom1~>None</option>	
+</select></td></tr>
+<tr><td colspan="2"><b>Stop bits:</b></td>
+<td height="25"><select style="width:160px" id="select" name="StopCom1">
+<option value="1" ~config_StopCom1~>1</option>
+<option value="2" ~config_StopCom1~>2</option>
+</select></td></tr>
+<tr>
+<td colspan="2"><b>Flow control:</b></td>
+<td height="25"><select style="width:160px" id="select" name="FlowCom1"disabled>
+<option value="0" ~config_FlowCom1~>Disable</option>
+<option value="1" ~config_FlowCom1~>Xon/Xoff</option>
+<option value="2" ~config_FlowCom1~>Hardware</option>
+<option value="3" ~config_FlowCom1~>None</option>
+</select></td>
+</tr>
+<!--
+<tr>
+  <td height="25" colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+</tr>
+<tr>
+<td colspan="2"><b>RS422/RS485 Control:</b></td>
+<td height="25"><select style="width:160px" id="select" name="RemoteCom1" disabled>
+<option value="0" ~config_rsremote1~>Disabled</option>
+<option value="1" ~config_rsremote1~>RS422</option>
+<option value="2" ~config_rsremote1~>RS485 Full</option>
+<option value="3" ~config_rsremote1~>RS485 Half</option>
+</select></td>
+</tr>
+-->
+<tr>
+  <td colspan="3" align="center" valign="middle">
+<div align="center"><b>--------------------------------------</b></div></td>
+  </tr>
+<tr>
+  <td width="172" align="left" valign="middle"></td>
+  <td>&nbsp;</td>
+</tr>
+</table>
+<div align="center">
+  <input type="submit" value="-- Update Settings --" />
+</div>
+</div>
+</form>
+
+</div>
+
+<script type="text/javascript">
+document.getElementById('hello').innerHTML = "~hellomsg~";
+</script>
+
+~inc:footer.inc~

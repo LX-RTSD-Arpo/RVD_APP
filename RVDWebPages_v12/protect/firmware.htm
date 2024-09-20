@@ -1,0 +1,50 @@
+~inc:header.inc~
+<div id="content">
+
+	<div class="examplebox">
+		<form method=post action="/firmwareupload"  enctype="multipart/form-data">
+			<table align="center">
+			<tr><td width="150" align="center"><b>Firmware Update</b></td></tr>
+			<tr>
+			    <td colspan="3" align="center" valign="middle">
+				<div align="center"><b>--------------------------------------</b></div></td>
+			</tr>
+			<tr><td><b>Discription:</b></td><td id="titlex">~firmware_discription~</td></tr>
+			<tr><td><b>Version:</b></td><td id="titlex">~firmware_version~</td></tr>
+			<tr><td><b>Builde date:</b></td><td id="titlex">~firmware_build~</td></tr>
+			<!-- <tr><td><b>Upload MD5:</b></td><td id="titlex">~uploadedmd5~</td></tr> -->
+			<tr>
+				<td colspan="3" align="center" valign="middle">
+				<div align="center"><b>--------------------------------------</b></div></td>
+			</tr>
+			<tr><td><b>Firmware Upgrade:</b></td><td id="titlex"><input type=file name=i size=40 ></td></tr>
+			<!-- <tr><td><b>Status:</b></td><td id="titlex"><span id="fStatus" style="font-weight:normal">?</span></td></tr> -->
+			<tr>
+				<td colspan="3" align="center" valign="middle">
+				<div align="center"><b>--------------------------------------</b></div></td>
+			</tr>
+			</table>
+			<div align="center">  <input width="150" height="20" type="submit" style="height:30px; width:180px;" value="-- Upload Firmware --" /> </div>
+
+		</form>
+		<form method=post action="/protect/reboot.htm"  enctype="multipart/form-data">
+				<td colspan="3" align="center" valign="middle">
+				<div align="center"><b>--------------------------------------</b></div></td>
+			<div align="center">  <input width="150" height="20" type="submit" style="height:30px; width:180px;"  value="-- Reboot --" /></div>			
+        </form>
+	</div>
+
+</div>
+
+<script type="text/javascript">
+// Parses the xmlResponse from vars.xml and updates the status box
+function updateStatus(xmlData) {
+	document.getElementById('fStatus').innerHTML = getXMLValue(xmlData, 'fStatus');
+}
+setTimeout("newAJAXCommand('fupload.xml', updateStatus, true)",500);
+</script>
+
+<script type="text/javascript">
+document.getElementById('hello').innerHTML = "~hellomsg~";
+</script>
+~inc:footer.inc~
