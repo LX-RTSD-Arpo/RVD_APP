@@ -1,33 +1,77 @@
-~inc:header.inc~
-<div id="content">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
+<html>
 
-	<h2>HELP</h2>
-	<h3>Reconnection Instructions</h3>
+<head>
+	<title>RVD Field Processor</title>
+	<link href="mchp.css" rel="stylesheet" type="text/css" />
+	<script src="mchp.js" type="text/javascript"></script>
+</head>
 
-	<ol>
-		<li style="margin-bottom:10px"><b>Did you change the hostname?</b><br />
-			You should be able to access your board by clicking the link above.</li>
-		<li style="margin-bottom:10px"><b>Did you change the MAC address?</b><br />
-			The DHCP server probably assigned the board a new IP address, but your
-			computer's network cache has saved the wrong address. From the command
-			prompt in Windows, enter "nbtstat&nbsp;-R" to clear old values, then try
-			the link above.</li>
-		<li style="margin-bottom:10px"><b>Did you try the IP address?</b><br />
-			Try accessing the board directly at the IP address shown on the LCD screen.
-			(ex: enter "http://192.168.2.23/" into your browser). If this fails, then
-			the IP address you set is not reachable. Try the step below.</li>
-		<li><b>Still not working?</b><br />
-			You can restore settings by clearing the device's firmware. Hold
-			S3 and press S1 (Reset).
-			You Connect serial cable on serial 1 of device and open the Hyper Terminal
-			Select serial port and config Baud rate is 9600,n,8,1.
-			Continue holding S3 until the LEDs flash. Release S3 and press S1 (Reset) again.</li>
-	</ol>
+<body onLoad="allowAJAX=true;" onUnload="allowAJAX=false;">
+	<div id="shadow-one">
+		<div id="shadow-two">
+			<div id="shadow-three">
+				<div id="shadow-four">
+					<div id="page">
 
-</div>
+						<div style="padding:0 0 5px 5px"><img src="logo.GIF" /></div>
 
-<script type="text/javascript">
-	document.getElementById('hello').innerHTML = "~hellomsg~";
-</script>
+						<div id="title">
+							<div class="right">RVD Field Processor</div><span id="hello">&nbsp;</span>
+							<div class="left">Relay Control</div><span id="hello">&nbsp;</span>
+						</div>
 
-~inc:footer.inc~
+						<div id="menu">
+							<a href="index.htm" onclick="allowAJAX=false;">Home</a>
+							<a href="protect/control.htm" onclick="allowAJAX=false;">Relay Control</a>
+							<a href="protect/ntpstatus.htm" onclick="allowAJAX=false;">NTP Status</a>
+							<a href="protect/ntpconfig.htm" onclick="allowAJAX=false;">NTP Setting</a>
+							<a href="protect/tcpip.htm" onclick="allowAJAX=false;">Ethernet Setting</a>
+							<a href="protect/firmware.htm" onclick="allowAJAX=false;">Firmware</a>
+							<a href="tech.htm" onclick="allowAJAX=false;">Support</a>
+						</div>
+						
+						<div id="content">
+
+							<h2>HELP</h2>
+							<h3>Reconnection Instructions</h3>
+
+							<ol>
+								<li style="margin-bottom:10px"><b>Did you change the hostname?</b><br />
+									You should be able to access your board by clicking the link above.</li>
+								<li style="margin-bottom:10px"><b>Did you change the MAC address?</b><br />
+									The DHCP server probably assigned the board a new IP address, but your
+									computer's network cache has saved the wrong address. From the command
+									prompt in Windows, enter "nbtstat&nbsp;-R" to clear old values, then try
+									the link above.</li>
+								<li style="margin-bottom:10px"><b>Did you try the IP address?</b><br />
+									Try accessing the board directly at the IP address shown on the LCD screen.
+									(ex: enter "http://192.168.2.23/" into your browser). If this fails, then
+									the IP address you set is not reachable. Try the step below.</li>
+								<li><b>Still not working?</b><br />
+									You can restore settings by clearing the device's firmware. Hold
+									S3 and press S1 (Reset).
+									You Connect serial cable on serial 1 of device and open the Hyper Terminal
+									Select serial port and config Baud rate is 9600,n,8,1.
+									Continue holding S3 until the LEDs flash. Release S3 and press S1 (Reset) again.
+								</li>
+							</ol>
+
+						</div>
+
+						<script type="text/javascript">
+							document.getElementById('hello').innerHTML = "~hellomsg~";
+						</script>
+
+						<div class="spacer">&nbsp;</div>
+						<div id="footer">Copyright &copy; 2016 Loxley Public Company Limited, Inc.</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>

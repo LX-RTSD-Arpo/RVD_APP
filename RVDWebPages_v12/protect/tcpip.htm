@@ -1,52 +1,119 @@
-~inc:header.inc~
-<div id="content">
-<form method="post" action="/protect/tcpip.htm" name="tcpip">
-<div class="examplebox">
-<table align="center">
-<tr><td><b>Host Name:</b></td>
-<td><input type="text" maxlength="15" name="host" value="~config_hostname~" /></td></tr>
-<tr><td>&nbsp;</td><td></td></tr>
-<tr><td></td>
-<td></td></tr>
-<tr><td width="200"><b>IP Address:</b></td>
-<td width="150" ><input type="text" maxlength="15" name="ip" value="~config_ip~" /></td></tr>
-<tr><td><b>Gateway:</b></td>
-<td><input type="text" maxlength="15" name="gw" value="~config_gw~" /></td></tr>
-<tr><td><b>Subnet Mask:</b></td>
-<td><input type="text" maxlength="15" name="subnet" value="~config_subnet~" /></td></tr>
-<tr><td><b>Primary DNS:</b></td>
-<td><input type="text" maxlength="15" name="dns1" value="~config_dns1~" /></td></tr>
-<tr><td><b>Secondary DNS:</b></td>
-<td><input type="text" maxlength="15" name="dns2" value="~config_dns2~" /></td></tr>
-<tr>
-<td height="25" colspan="3" align="center" valign="middle">
-<div align="center"><b>--------------------------------------</b></div></td>
-</tr>
-<tr>
-  <td width="172" align="left" valign="middle"></td>
-  <td>&nbsp;</td>
-</tr>
-</table>
-<div align="center">
-  <input type="submit" value="-- Update Settings --" />
-</div>
-</div>
-</form>
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
+<html>
 
-<script language="javascript">
+<head>
+  <title>RVD Field Processor</title>
+  <link href="../mchp.css" rel="stylesheet" type="text/css" />
+  <script src="../mchp.js" type="text/javascript"></script>
+</head>
 
-function configIPBoxes() {
-	
-}
+<body onLoad="allowAJAX=true;" onUnload="allowAJAX=false;">
+  <div id="shadow-one">
+    <div id="shadow-two">
+      <div id="shadow-three">
+        <div id="shadow-four">
+          <div id="page">
 
-configIPBoxes();
+            <div style="padding:0 0 5px 5px"><img src="../logo.GIF" /></div>
 
-</script>
+            <div id="title">
+              <div class="right">RVD Field Processor</div><span id="hello">&nbsp;</span>
+              <div class="left">Ethernet Setting</div><span id="hello">&nbsp;</span>
+            </div>
 
-</div>
+            <div id="menu">
+              <a href="../index.htm" onclick="allowAJAX=false;">Home</a>
+              <a href="radarconfig.htm" onclick="allowAJAX=false;">Radar Interface</a>
+              <a href="control.htm" onclick="allowAJAX=false;">Relay Control</a>
+              <a href="ntpstatus.htm" onclick="allowAJAX=false;">NTP Status</a>
+              <a href="ntpconfig.htm" onclick="allowAJAX=false;">NTP Setting</a>
+              <a href="tcpip.htm" onclick="allowAJAX=false;">Ethernet Setting</a>
+              <a href="firmware.htm" onclick="allowAJAX=false;">Firmware</a>
+              <a href="../tech.htm" onclick="allowAJAX=false;">Support</a>
+            </div>
+            
+            <div id="content">
+              <form method="post" action="tcpip.htm" name="tcpip">
+                <div class="examplebox">
+                  <table align="center">
+                    <tr>
+                      <td></td>
+                      <td></td>
+                    </tr>
+                    <tr>
+                      <td><b>Host Name:</b></td>
+                      <td><input type="text" maxlength="15" name="host" value="~config_hostname~" /></td>
+                    </tr>
+                    <tr>
+                      <td width="200"><b>IP Address LAN1:</b></td>
+                      <td width="150"><input type="text" maxlength="15" name="ip" value="~config_ip~" /></td>
+                    </tr>
+                    <tr>
+                      <td width="200"><b>IP Address LAN2:</b></td>
+                      <td width="150"><input type="text" maxlength="15" name="ip" value="~config_ip~" /></td>
+                    </tr>
+                    <tr>
+                      <td><b>Gateway:</b></td>
+                      <td><input type="text" maxlength="15" name="gw" value="~config_gw~" /></td>
+                    </tr>
+                    <tr>
+                      <td><b>Subnet Mask:</b></td>
+                      <td><input type="text" maxlength="15" name="subnet" value="~config_subnet~" /></td>
+                    </tr>
+                    <tr>
+                      <td><b>Primary DNS:</b></td>
+                      <td><input type="text" maxlength="15" name="dns1" value="~config_dns1~" /></td>
+                    </tr>
+                    <tr>
+                      <td><b>Secondary DNS:</b></td>
+                      <td><input type="text" maxlength="15" name="dns2" value="~config_dns2~" /></td>
+                    </tr>
+                    <tr>
+                      <td height="25" colspan="3" align="center" valign="middle">
+                        <div align="center"><b>--------------------------------------</b></div>
+                      </td>
+                    </tr>
+                    <tr>
+                      <td width="172" align="left" valign="middle"></td>
+                      <td>&nbsp;</td>
+                    </tr>
+                  </table>
+                  <div align="center">
+                    <input type="submit" value="-- Update Settings --" />
+                  </div>
+                </div>
+              </form>
 
-<script type="text/javascript">
-document.getElementById('hello').innerHTML = "~hellomsg~";
-</script>
+              <!--<script>
+                async function fetchConfigFile() {
+                    try {
+                        // Fetch the configuration file
+                        const response = await fetch('/config.txt');
+                        // Get the text from the file
+                        const text = await response.text();
+                        // Display the content in the 'config' div
+                        document.getElementById('config').innerText = text;
+                    } catch (error) {
+                        console.error('Error fetching config file:', error);
+                        document.getElementById('config').innerText = 'Error loading config file';
+                    }
+                }
+        
+                // Call the function after the page loads
+                window.onload = fetchConfigFile;
+            </script>-->
 
-~inc:footer.inc~
+            </div>
+
+            <div class="spacer">&nbsp;</div>
+            <div id="footer">Copyright &copy; 2016 Loxley Public Company Limited, Inc.</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+</body>
+
+</html>

@@ -243,7 +243,7 @@ class PvrStatistics:
             #sock.bind(("192.168.11.55", 55555))
             sock.sendto(full_msg, (host, port))
 
-udp_host = '192.168.11.8'
+udp_host = '10.12.60.87'
 udp_port = 55555
 pvr_data = PvrStatistics()
 no_zone = 3

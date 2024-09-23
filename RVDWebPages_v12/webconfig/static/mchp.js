@@ -185,7 +185,6 @@ function updateStatus(xmlData) {
 		
 }
 
-
 //kick off the AJAX Updater
 setTimeout("pollAJAX()",500);
 

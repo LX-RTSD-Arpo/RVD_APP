@@ -1,7 +1,7 @@
 auto eth1
 iface eth1 inet static
-	address 10.12.60.87/24
+	address 10.38.81.26/24
 	netmask 255.255.255.0
 	#broadcast 10.12.60.255
-	post-up ip route add 10.12.60.85/32 dev eth1
-	pre-down ip route del 10.12.60.85/32 dev eth1
+	post-up ip route add 10.38.81.24/32 dev eth1
+	pre-down ip route del 10.38.81.24/32 dev eth1

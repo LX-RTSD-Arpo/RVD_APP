@@ -1,110 +1,98 @@
-~inc:header.inc~
-<div id="content">
-  <div class="examplebox">
-    <table align="center">
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
+<html lang="en">
 
-      <!--
-<tr>
-  <td width="256"><b>Syncronize with a time server:</b></td>
-<td width="220" id="titlex">~ntp_seractive~</td>
-</tr>
-<tr>
-  <td><b>NTP status:</b></td>
-  <td id="titlex">~ntp_status~</td>
-  </tr>
-<tr>
-  <td><b>Time zone:</b></td>
-  <td id="titlex">~ntp_timezone~</td>
-</tr>
-<tr>
-  <td colspan="3" align="center" valign="middle"><div align="center"><b>--------------------------------------</b></div></td>
-</tr>
-<tr>
-  <td></td>
-  <td></td>
-</tr>
-<tr>
-  <td><b>Time format:</b></td>
-  <td id="titlex">~time_format~</td>
-</tr>
--->
-      <tr>
-        <td colspan="3" align="center" valign="middle">
-          <div align="center"><b>--------------------------------------</b></div>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><b>Hardware Address:</b></td>
-        <td id="titlex">~config_mac~</td>
-      </tr>
-      <tr>
-        <td colspan="3" align="center" valign="middle">
-          <div align="center"><b>--------------------------------------</b></div>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><b>IP Address:</b></td>
-        <td id="titlex">~config_ip~</td>
-      </tr>
-      <tr>
-        <td><b>Gateway:</b></td>
-        <td id="titlex">~config_gw~</td>
-      </tr>
-      <tr>
-        <td><b>Subnet Mask:</b></td>
-        <td id="titlex">~config_subnet~</td>
-      </tr>
-      <tr>
-        <td><b>Primary DNS:</b></td>
-        <td id="titlex">~config_dns1~</td>
-      </tr>
-      <tr>
-        <td><b>Secondary DNS:</b></td>
-        <td id="titlex">~config_dns2~</td>
-      </tr>
-      <tr>
-        <td colspan="3" align="center" valign="middle">
-          <div align="center"><b>--------------------------------------</b></div>
-        </td>
-      </tr>
-      <tr>
-        <td></td>
-        <td></td>
-      </tr>
-      <tr>
-        <td><b>Port1 RS232:</b></td>
-        <td id="titlex">~Port1_Status~</td>
-      </tr>
-      <tr>
-        <td><b>Port2 RS422/485:</b></td>
-        <td id="titlex">~Port2_Status~</td>
-      </tr>
-      <tr>
-        <td colspan="3" align="center" valign="middle">
-          <div align="center"><b>--------------------------------------</b></div>
-        </td>
-      </tr>
-      <tr>
-        <td><b>Firmware Version:</b></td>
-        <td id="titlex">~version~</td>
-      </tr>
-      <tr>
-        <td colspan="3" align="center" valign="middle">
-          <div align="center"><b>--------------------------------------</b></div>
-        </td>
-      </tr>
-    </table>
+<head>
+  <title>RVD Web Management</title>
+  <link href="mchp.css" rel="stylesheet" type="text/css" />
+  <script src="mchp.js" type="text/javascript"></script>
+</head>
+
+<body onLoad="allowAJAX=true;" onUnload="allowAJAX=false;">
+  <div id="shadow-one">
+    <div id="shadow-two">
+      <div id="shadow-three">
+        <div id="shadow-four">
+          <div id="page">
+            <div style="padding:0 0 5px 5px"><img src="logo.GIF" /></div>
+
+            <div id="title">
+              <div class="right">RVD Field Processor</div><span id="hello">&nbsp;</span>
+              <div class="left">Home</div><span id="hello">&nbsp;</span>
+            </div>
+
+            <div id="menu">
+              <a href="index.htm" onclick="allowAJAX=false;">Home</a>
+              <a href="protect/radarconfig.htm" onclick="allowAJAX=false;">Radar Interface</a>
+              <a href="protect/control.htm" onclick="allowAJAX=false;">Relay Control</a>
+              <a href="protect/ntpstatus.htm" onclick="allowAJAX=false;">NTP Status</a>
+              <a href="protect/ntpconfig.htm" onclick="allowAJAX=false;">NTP Setting</a>
+              <a href="protect/tcpip.htm" onclick="allowAJAX=false;">TCP/IP Setting</a>
+              <a href="protect/firmware.htm" onclick="allowAJAX=false;">Firmware</a>
+              <a href="tech.htm" onclick="allowAJAX=false;">Support</a>
+            </div>
+
+            <div id="content">
+              <div class="examplebox">
+                <table align="center">
+                  <tr>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><b>IP Address LAN1:</b></td>
+                    <td id="titlex">~config_ip~</td>
+                  </tr>
+                  <tr></tr>
+                    <td><b>IP Address LAN2:</b></td>
+                    <td id="titlex">~config_ip~</td>
+                  </tr>
+                  <tr>
+                    <td><b>Gateway:</b></td>
+                    <td id="titlex">~config_gw~</td>
+                  </tr>
+                  <tr>
+                    <td><b>Subnet Mask:</b></td>
+                    <td id="titlex">~config_subnet~</td>
+                  </tr>
+                  <tr>
+                    <td><b>Primary DNS:</b></td>
+                    <td id="titlex">~config_dns1~</td>
+                  </tr>
+                  <tr>
+                    <td><b>Secondary DNS:</b></td>
+                    <td id="titlex">~config_dns2~</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" align="center" valign="middle">
+                      <div align="center"><b>--------------------------------------</b></div>
+                    </td>
+                  </tr>
+                  <tr>
+                    <td></td>
+                    <td></td>
+                  </tr>
+                  <tr>
+                    <td><b>Firmware Version:</b></td>
+                    <td id="titlex">~version~</td>
+                  </tr>
+                  <tr>
+                    <td colspan="3" align="center" valign="middle">
+                      <div align="center"><b>--------------------------------------</b></div>
+                    </td>
+                  </tr>
+                </table>
+              </div>
+            </div>
+
+            <div class="spacer">&nbsp;</div>
+            <div id="footer">Copyright &copy; 2016 Loxley Public Company Limited, Inc.</div>
+
+          </div>
+        </div>
+      </div>
+    </div>
   </div>
-</div>
 
+</body>
 
-
-~inc:footer.inc~
+</html>

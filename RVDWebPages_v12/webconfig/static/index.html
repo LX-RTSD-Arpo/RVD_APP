@@ -1,0 +1,104 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
+<html>
+<head>
+    <title>RVD-Field Web Management</title>
+    <link href="/static/mchp.css" rel="stylesheet" type="text/css" />
+    <script src="/static/mchp.js" type="text/javascript"></script>
+    <script src="/static/javascriptMD5.js" type="text/javascript"></script>
+</head>
+
+<body onLoad="allowAJAX=true;" onUnload="allowAJAX=false;">
+<div id="shadow-one">
+    <div id="shadow-two">
+        <div id="shadow-three">
+            <div id="shadow-four">
+                <div id="page">
+                    <div style="padding:0 0 5px 5px"><img src="/static/logo.gif" /></div>
+                    <div id="title"><div class="right">RVD-Field Processor</div><span id="hello">&nbsp;</span></div>
+
+                    <div id="menu">
+                        <a href="/static/index.html" onclick="allowAJAX=false;">Home</a>
+                        <!-- <a href="/static/useraccount.html" onclick="allowAJAX=false;">User Accounts</a> -->
+                        <a href="/static/network.html" onclick="allowAJAX=false;">TCP/IP Setting</a>
+                        <!-- <a href="/static/firmware.html" onclick="allowAJAX=false;">Firmware</a> -->
+                        <a href="/static/support.html" onclick="allowAJAX=false;">Support</a>
+                    </div>
+
+                    <div id="content">
+                        <div class="examplebox">
+                            <table align="center">
+                                    <tr>
+                                        <td width="200"><b>Host Name:</b></td>
+                                        <td width="150" id="titlex"><span id="host" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr><td>&nbsp;</td><td></td>
+                                    </tr>
+                                    <tr><td width="200"><b>IP Address:</b></td>
+                                        <td width="150" id="titlex"><span id="ip" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr><td width="200"><b>Gateway:</b></td>
+                                        <td width="150" id="titlex"><span id="gateway" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr><td width="200"><b>Subnet Mask:</b></td>
+                                        <td width="150" id="titlex"><span id="subnet_mask" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr><td width="200"><b>Primary DNS:</b></td>
+                                        <td width="150" id="titlex"><span id="primary_dns" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr><td width="200"><b>Secondary DNS:</b></td>
+                                        <td width="150" id="titlex"><span id="secondary_dns" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="25" colspan="3" align="center" valign="middle">
+                                            <div align="center"><b>--------------------------------------</b></div>
+                                        </td>
+                                    </tr>
+                                    <tr><td width="200"><b>Firmware Version:</b></td>
+                                        <td width="150" id="titlex"><span id="firmware_version" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr>
+                                        <td height="25" colspan="3" align="center" valign="middle">
+                                            <div align="center"><b>--------------------------------------</b></div>
+                                        </td>
+                                    </tr>
+                                </table>                               
+                            </div>
+
+                        <div id="current-settings">
+                            <p>กำลังโหลดการตั้งค่า...</p>
+                        </div>
+                        <script>
+                            async function fetchCurrentSettings() {
+                                try {
+                                    const response = await fetch('/get-network-settings');
+                                    const data = await response.json();
+                                    if (response.ok) {
+                                        document.getElementById('host').textContent = data.host;
+                                        document.getElementById('ip').textContent = data.ip;
+                                        document.getElementById('gateway').textContent = data.gateway;
+                                        document.getElementById('subnet_mask').textContent = data.subnet_mask;
+                                        document.getElementById('primary_dns').textContent = data.primary_dns;
+                                        document.getElementById('secondary_dns').textContent = data.secondary_dns;
+                                        document.getElementById('firmware_version').textContent = data.firmware_version;
+                                    } else {
+                                        document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
+                                    }
+                                } catch (error) {
+                                    document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
+                                }
+                            }
+
+                            fetchCurrentSettings();
+                        </script>
+                    </div>
+
+                    <div class="spacer">&nbsp;</div>
+                    <div id="footer">Copyright &copy; 2024 Loxley Public Company Limited, Inc.</div>
+
+                </div>
+            </div>
+        </div>
+    </div>
+</div>
+</body>
+</html>

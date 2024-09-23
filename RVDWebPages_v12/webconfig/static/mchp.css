@@ -40,7 +40,7 @@ body {
 	background: #B8C9DD;
 	padding: 4px;
 	font-weight: bold;
-	color: #000;
+	color: #fff;
 	margin-bottom: 15px;
 	height: 16px;
 }
@@ -55,12 +55,6 @@ body {
 	float: right;
 	width: 300px;
 	text-align: right;
-}
-
-#title .left {
-	float: left;
-	width: 300px;
-	text-align: left;
 }
 
 #menu {

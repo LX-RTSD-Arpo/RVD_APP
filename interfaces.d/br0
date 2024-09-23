@@ -6,9 +6,9 @@ iface eth1 inet manual
 
 auto br0
 iface br0 inet static
-	address 10.12.60.86
+	address 10.38.81.25
 	netmask 255.255.255.0
-	gateway 10.12.60.254
+	gateway 10.38.81.254
 	#post-up ip route add 10.13.80.254/32 dev br0
     #pre-down ip route del 10.13.80.254/32 dev br0
 	bridge_ports eth0 eth1
