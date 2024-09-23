@@ -6,12 +6,42 @@ app = Flask(__name__)
 
 # กำหนด path สำหรับ config.ini ที่อยู่ในโฟลเดอร์เดียวกับ app.py
 config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'config.ini')
+eth0_path = '/etc/network/interfaces.d/eth0'
+eth1_path = '/etc/network/interfaces.d/eth1'
 
 # สร้างตัวแปรสำหรับเก็บค่า config
-config = configparser.ConfigParser()
-config.read(config_path)
+#config = configparser.ConfigParser()
+#config.read(config_path)
 
-def read_network_settings():
+def read_file(file_path):
+    try:
+        with open(file_path, 'r') as file:
+            content = file.readlines()
+        return content
+    except FileNotFoundError:
+        return []
+    except PermissionError:
+        return []
+    except Exception as e:
+        return []
+
+def parse_eth_config(lines):
+    config = {}
+    config['host'] = "RVDAPO"
+    config['primary_dns'] = "0.0.0.0"
+    config['secondary_dns'] = "0.0.0.0"
+
+    for line in lines:
+        line = line.strip()
+        if line.startswith('address'):
+            config['ip'] = line.split()[1]
+        elif line.startswith('netmask'):
+            config['subnet_mask'] = line.split()[1]
+        elif line.startswith('gateway'):
+            config['gateway'] = line.split()[1]
+    return config
+
+"""def read_network_settings():
     print("Reading network settings from config.ini")
     network_settings = {}
     try:
@@ -25,9 +55,9 @@ def read_network_settings():
     except KeyError as e:
         print(f"Error: Missing key {e} in 'network' section.")
         raise
-    return network_settings
+    return network_settings"""
 
-def write_network_settings(host_address, ip_address, gateway, subnet_mask, primary_dns, secondary_dns):
+"""def write_network_settings(host_address, ip_address, gateway, subnet_mask, primary_dns, secondary_dns):
     print(f"Writing network settings to config.ini: Host={host_address} IP={ip_address}, Gateway={gateway}, Subnet Mask={subnet_mask}, Primary DNS={primary_dns}, Secondary DNS={secondary_dns}")
     if 'network' not in config:
         config['network'] = {}
@@ -40,15 +70,23 @@ def write_network_settings(host_address, ip_address, gateway, subnet_mask, prima
     # config['network']['firmware_version'] = firmware_version
     with open(config_path, 'w') as configfile:
         config.write(configfile)
-    print("Network settings written successfully.")
+    print("Network settings written successfully.")"""
 
 @app.route('/get-network-settings', methods=['GET'])
 def get_network_settings():
     print("GET request received for network settings.")
+    eth0_path = '/etc/network/interfaces.d/eth0'
+    eth1_path = '/etc/network/interfaces.d/eth1'
+
     try:
-        settings = read_network_settings()
-        print(f"Network settings retrieved: {settings}")
-        return jsonify(settings)
+        eth0_lines = read_file(eth0_path)
+        eth1_lines = read_file(eth1_path)
+
+        eth0_config = parse_eth_config(eth0_lines)
+        eth1_config = parse_eth_config(eth1_lines)
+        #settings = read_network_settings()
+        print(f"Network settings retrieved: {eth0_config}")
+        return jsonify(eth0_config)
     except Exception as e:
         print(f"Error retrieving network settings: {e}")
         return jsonify(error=str(e)), 500
