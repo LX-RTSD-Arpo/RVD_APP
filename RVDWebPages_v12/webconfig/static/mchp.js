@@ -1,3 +1,20 @@
+function sendRebootCommand() {
+    fetch('/reboot', {
+        method: 'POST',
+    }).then(response => {
+        if (response.ok) {
+            alert("Reboot command sent successfully!");
+        } else {
+            alert("Failed to send reboot command.");
+        }
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("Error sending reboot command.");
+    });
+}
+
+/////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
+
 /**
  * Determines the maximum update speed
  * Requests to update data will happen no more frequently than
