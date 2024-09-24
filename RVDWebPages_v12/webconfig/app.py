@@ -50,7 +50,6 @@ def parse_eth_config(lines1, lines2, lines3):
                 config['ip2'] = line2.split()[1].split('/')[0]
             elif line2.startswith('post-up'):
                 parts = line2.split()
-                
                 if len(parts) > 4 and parts[3] == 'add':
                     config['radarip'] = parts[4].split('/')[0]  # Get the IP address
 
@@ -152,6 +151,7 @@ def set_network_settings():
     data = request.get_json()
     host_address = data.get('host')
     radarip = data.get('radarip')
+    device_id = data.get('device_id')
     ip_address1 = data.get('ip1')
     ip_address2 = data.get('ip2')
     gateway = data.get('gateway')
@@ -161,7 +161,7 @@ def set_network_settings():
     # firmware_version = data.get('firmware_version')
     #print(f"Setting network settings to: Host={host_address} IP={ip_address}, Gateway={gateway}, Subnet Mask={subnet_mask}, Primary DNS={primary_dns}, Secondary DNS={secondary_dns}")
     try:
-        write_network_settings(host_address, radarip, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns)
+        write_network_settings(host_address, radarip, device_id, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns)
         return jsonify(success=True)
     except Exception as e:
         print(f"Error setting network settings: {e}")
