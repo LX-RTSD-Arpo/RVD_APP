@@ -147,7 +147,7 @@
                                         headers: {
                                             'Content-Type': 'application/json'
                                         },
-                                        body: JSON.stringify({ host, radarip, ip1, ip2, gateway, subnet_mask, primary_dns, secondary_dns })
+                                        body: JSON.stringify({ host, radarip, device_id, ip1, ip2, gateway, subnet_mask, primary_dns, secondary_dns })
                                     });
 
                                     const data = await response.json();
