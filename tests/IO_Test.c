@@ -130,13 +130,14 @@ int main() {
         modbus_free(ctx);
         return -3;
     }
-
+    modbus_set_indication_timeout(ctx, 1, 0);
+    
     int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
     if (ri == -1)
     {
         fprintf(stderr, "\n[-]MODBUS read error: %s\n", modbus_strerror(errno));
         ctx = NULL;
-        return -3;
+        //return -3;
     }
     else
     {
@@ -151,11 +152,11 @@ int main() {
     {
         fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));
         ctx = NULL;
-        return -3;
+        //return -3;
     }
     // Close the MODBUS RTU connection
-    modbus_close(ctx);
-    modbus_free(ctx);
+    //modbus_close(ctx);
+    //modbus_free(ctx);
 
     return voltage;
 }
