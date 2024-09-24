@@ -4,6 +4,7 @@
 #include <errno.h>
 #include <fcntl.h>
 #include <string.h>
+#include <stdlib.h>
 
 #define SLAVEID 1
 #define MAX_SERIAL_PORT_ATTEMPTS 5
