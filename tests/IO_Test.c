@@ -3,6 +3,7 @@
 #include <unistd.h>
 #include <errno.h>
 #include <fcntl.h>
+#include <string.h>
 
 #define SLAVEID 1
 #define MAX_SERIAL_PORT_ATTEMPTS 5
