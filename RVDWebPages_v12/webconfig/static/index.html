@@ -44,6 +44,10 @@
                                         <td width="150" id="titlex"><span id="radarip" required>กำลังโหลด...</span></td>
                                     </tr>
                                     <tr>
+                                        <td width="200"><b>Device Number:</b></td>
+                                        <td width="150" id="titlex"><span id="device_ip" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr>
                                         <td width="200"><b>IP Address LAN1:</b></td>
                                         <td width="150" id="titlex"><span id="ip1" required>กำลังโหลด...</span></td>
                                     </tr>
@@ -100,6 +104,7 @@
                                         if (response.ok) {
                                             document.getElementById('host').textContent = data.host;
                                             document.getElementById('radarip').textContent = data.radarip;
+                                            document.getElementById('device_id').textContent = data.device_id;
                                             document.getElementById('ip1').textContent = data.ip1;
                                             document.getElementById('ip2').textContent = data.ip2;
                                             document.getElementById('gateway').textContent = data.gateway;

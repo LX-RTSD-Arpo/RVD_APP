@@ -106,6 +106,7 @@ int main() {
     }
 
     ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
+    modbus_set_response_timeout(ctx, 5, 0);
     if (ctx == NULL || mc == -1)
     {
         if (ctx == NULL)
@@ -130,33 +131,38 @@ int main() {
         modbus_free(ctx);
         return -3;
     }
-    modbus_set_indication_timeout(ctx, 1, 0);
-    
-    int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
+
+    /*int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
     if (ri == -1)
     {
         fprintf(stderr, "\n[-]MODBUS read error: %s\n", modbus_strerror(errno));
-        ctx = NULL;
+        //modbus_close(ctx);
+        //modbus_free(ctx);
         //return -3;
     }
     else
     {
         for (int i = 0; i < REGIS_COUNT; i++)
-            voltage = (input_registers[i] / 400) * 24;
-    }
+        {
+            voltage = ((float)input_registers[i] / 400) * 24;
+            printf("\t\t\nInput Voltage CH%d = %d ", i + 1, (int)voltage);
+        }
+    }*/
     
     coils[0] = reset_output1_enable;
     coils[1] = reset_output2_enable;
+    
     int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
     if (rcw == -1)
     {
         fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));
-        ctx = NULL;
+        //modbus_close(ctx);
+        //modbus_free(ctx);
         //return -3;
     }
     // Close the MODBUS RTU connection
     //modbus_close(ctx);
     //modbus_free(ctx);
 
-    return voltage;
+    return 0;
 }

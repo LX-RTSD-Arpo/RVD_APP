@@ -40,10 +40,15 @@
                                             <td>&nbsp;</td>
                                             <td></td>
                                         </tr>
-                                        <tr></tr>
+                                        <tr>
                                         <td width="200"><b>Radar IP Address:</b></td>
                                         <td width="150"><input type="text" id="radarip" maxlength="15" name="radarip"
                                                 required /></td>
+                                        </tr>
+                                        <tr>
+                                            <td width="200"><b>Device Number:</b></td>
+                                            <td width="150"><input type="text" id="device_idlength="15" name="device_id"
+                                                    required /></td>
                                         </tr>
                                         <tr>
                                             <td width="200"><b>IP Address LAN1:</b></td>
@@ -81,7 +86,7 @@
                                             </td>
                                         </tr>
                                     </table>
-                                    
+
                                     <div align="center">
                                         <input type="submit" value="-- Apply Settings --" style="height:30px; width:180px;" />
                                     </div>
@@ -108,6 +113,7 @@
                                         if (response.ok) {
                                             document.getElementById('host').value = data.host;
                                             document.getElementById('radarip').value = data.radarip;
+                                            document.getElementById('device_id').value = data.device_id;
                                             document.getElementById('ip1').value = data.ip1;
                                             document.getElementById('ip2').value = data.ip2;
                                             document.getElementById('gateway').value = data.gateway;
@@ -128,6 +134,7 @@
                                     event.preventDefault(); // ป้องกันการรีเฟรชหน้า
                                     const host = document.getElementById('host').value;
                                     const radarip = document.getElementById('radarip').value;
+                                    const device_id = document.getElementById('device_id').value
                                     const ip1 = document.getElementById('ip1').value;
                                     const ip2 = document.getElementById('ip2').value;
                                     const gateway = document.getElementById('gateway').value;

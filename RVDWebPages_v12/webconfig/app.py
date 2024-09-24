@@ -10,6 +10,7 @@ web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_
 eth0_path = '/etc/network/interfaces.d/eth0'
 eth1_path = '/etc/network/interfaces.d/eth1'
 br0_path = '/etc/network/interfaces.d/br0'
+rvd_config_path = '/root/RVD_APP/config.txt'
 
 web_config = configparser.ConfigParser()
 web_config.read(web_config_path)
@@ -26,7 +27,7 @@ def read_file(file_path):
     except Exception as e:
         return []
 
-def parse_eth_config(lines1, lines2):
+def parse_eth_config(lines1, lines2, lines3):
     global config
     config = {}
     config['host'] = subprocess.check_output(['hostname']).strip().decode('utf-8')
@@ -47,12 +48,16 @@ def parse_eth_config(lines1, lines2):
             line2 = line2.strip()
             if line2.startswith('address'):
                 config['ip2'] = line2.split()[1].split('/')[0]
-            if line2.startswith('post-up'):
-                # Split the line to find the IP address
+            elif line2.startswith('post-up'):
                 parts = line2.split()
-                # Check if the parts are sufficient to extract the IP address
+                
                 if len(parts) > 4 and parts[3] == 'add':
                     config['radarip'] = parts[4].split('/')[0]  # Get the IP address
+
+        for line3 in lines3:
+            line3 = line3.strip()
+            if line3.startswith('RESPONSE_SENDER'):
+                config['device_id'] = line3.split('=')[1].strip()
 
     except KeyError as e:
         print(f"Error: Missing key {e} in 'config' section.")
@@ -66,7 +71,7 @@ def write_file(file_path, lines):
     except Exception as e:
         return str(e)
     
-def write_network_settings(host, rvd_address, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns):
+def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns):
     #print(f"Writing network settings to config.ini: Host={host_address} IP={ip_address}, Gateway={gateway}, Subnet Mask={subnet_mask}, Primary DNS={primary_dns}, Secondary DNS={secondary_dns}")
     eth0_config = [
         f"auto eth0\n",
@@ -106,9 +111,22 @@ def write_network_settings(host, rvd_address, ip_address1, ip_address2, gateway,
         f"        bridge_fd 0\n",
     ]
 
+    rvd_config = [
+        f"RADAR_IP={rvd_address}\n",
+        f"RADAR_PORT=55555\n",
+        f"RADAR_ALIVE_PORT=60000\n\n",
+        f"SERVER_PORT= 50002\n\n",
+        f"RESPONSE_SENDER={device_id}\n",
+        f"RESPONSE_RECEIVER=0\n\n",
+        f"DEVICE_NETWORK_TIMEOUT=30\n",
+        f"RESET_OUTPUT1_ENABLE=1\n",
+        f"RESET_OUTPUT2_ENABLE=1\n",
+    ]
+
     write_file(eth0_path, eth0_config)
     write_file(eth1_path, eth1_config)
     write_file(br0_path, br0_config)
+    write_file(rvd_config_path, rvd_config)
     print("Network settings written successfully.")
 
 @app.route('/get-network-settings', methods=['GET'])
@@ -118,8 +136,9 @@ def get_network_settings():
     try:
         eth0_lines = read_file(eth0_path)
         eth1_lines = read_file(eth1_path)
+        rvd_lines = read_file(rvd_config_path)
 
-        eth_config = parse_eth_config(eth0_lines, eth1_lines)
+        eth_config = parse_eth_config(eth0_lines, eth1_lines, rvd_lines)
 
         print(f"Network settings retrieved: {eth_config}")
         return jsonify(eth_config)
