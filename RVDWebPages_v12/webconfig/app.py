@@ -143,7 +143,7 @@ def extract_version(filename):
         return None
     
 @app.route('/upload-firmware', methods=['POST'])
-def upload_file():
+def upload_firmware():
     try:
         if 'file' not in request.files:
             return jsonify({"error": "No file part in the request"}), 400
@@ -154,7 +154,7 @@ def upload_file():
             return jsonify({"error": "No selected file"}), 400
 
         # Save the file to the specified folder
-        file_path = os.path.join(app.config['firmware'], file.filename)
+        file_path = os.path.join(app.config['firmware_path'], file.filename)
         file.save(file_path)
 
         version = extract_version(file.filename)
