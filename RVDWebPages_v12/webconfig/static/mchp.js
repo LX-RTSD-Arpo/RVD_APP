@@ -9,6 +9,17 @@ function sendRebootCommand() {
     });
 }
 
+function sendTestCommand() {
+    fetch('/test-relay', {
+        method: 'POST',
+    }).then(response => {
+        alert("Test command sent successfully!");
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("Error sending test command.");
+    });
+}
+
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**

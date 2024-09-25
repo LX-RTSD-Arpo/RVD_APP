@@ -154,6 +154,17 @@ body {
 	background: #B8C9DD;
 }
 
+.button-container {
+    display: inline-block;
+    margin-left: 10px;
+}
+
+.apply-button, .reboot-button, .test-button {
+    height: 30px;
+    width: 150px;
+	margin: 10px;
+}
+
 .exercise {
 	background: #fe9;
 	padding: 5px;

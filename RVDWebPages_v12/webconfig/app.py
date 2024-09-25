@@ -214,6 +214,41 @@ def set_network_settings():
         print(f"Error setting network settings: {e}")
         return jsonify(error=str(e)), 500
 
+@app.route('/set-relay-control', methods=['POST'])
+def set_relay_control():
+    try:
+        data = request.json
+        relay01 = data.get('relay01')
+        relay02 = data.get('relay02')
+
+        # Process the relay settings here
+        print(f"Relay 1: {relay01}, Relay 2: {relay02}")
+
+        with open(rvd_config_path, 'r') as file:
+            lines = file.readlines()
+
+        for i in range(len(lines)):
+            if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
+                lines[i] = f"RESET_OUTPUT1_ENABLE={relay01}\n"
+            elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
+                lines[i] = f"RESET_OUTPUT2_ENABLE={relay02}\n"
+        
+        with open(rvd_config_path, 'w') as file:
+            file.writelines(lines)
+
+        return jsonify({'message': 'Relay settings updated successfully'}), 200
+    except Exception as e:
+        return jsonify({'error': str(e)}), 500
+
+@app.route('/test-relay', methods=['POST'])
+def test_relay():
+    try:
+        # Send the reboot command to the terminal
+        result = subprocess.run(['/root/RVD_APP/tests/iotest'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return jsonify({"message": "Test command sent."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/reboot', methods=['POST'])
 def reboot_device():
     try:
@@ -229,7 +264,6 @@ def index():
     return send_from_directory('static', 'index.html')
 
 if __name__ == '__main__':
-    
     port = web_config.getint('settings', 'port', fallback=5000)
     print(f"Starting the Flask server on port {port}...")
     app.run(host="0.0.0.0", debug=True, port=port)

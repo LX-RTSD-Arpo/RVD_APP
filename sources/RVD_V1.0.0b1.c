@@ -1004,6 +1004,34 @@ int main(int argc, char *argv[])
                                 }
                             }
 
+                            FILE *file = fopen("../config.txt", "r");
+                            if (!file)
+                            {
+                                perror("Unable to open configuration filee");
+                                return -1;
+                            }
+
+                            char line[MAX_LINE_LENGTH];
+
+                            while (fgets(line, sizeof(line), file))
+                            {
+                                char *key = strtok(line, "=");
+                                char *value = strtok(NULL, "\n");
+
+                                if (key && value)
+                                {
+                                    if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0)
+                                    {
+                                        *reset_output1_enable = atoi(value);
+                                    }
+                                    else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
+                                    {
+                                        *reset_output2_enable = atoi(value);
+                                    }
+                                }
+                            }
+
+                            fclose(file);
                             coils[0] = reset_output1_enable;
                             coils[1] = reset_output2_enable;
                             int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);

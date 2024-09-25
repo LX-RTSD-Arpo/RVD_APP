@@ -30,7 +30,7 @@
                         </div>
 
                         <div id="content">
-                            <form method="post" action="control.html" name="control">
+                            <form id="relay-control-from">
                                 <div class="examplebox">
                                     <table align="center">
                                         <tr>
@@ -42,7 +42,7 @@
                                             <td width="125" height="25">
                                                 <select style="width:160px" id="select" name="Relay01">
                                                     <option value="1" ~io_relay01~>ON</option>
-                                                    <option value="2" ~io_relay01~>OFF</option>
+                                                    <option value="0" ~io_relay01~>OFF</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -51,7 +51,7 @@
                                             <td width="125" height="25">
                                                 <select style="width:160px" id="select" name="Relay02">
                                                     <option value="1" ~io_relay02~>ON</option>
-                                                    <option value="2" ~io_relay02~>OFF</option>
+                                                    <option value="0" ~io_relay02~>OFF</option>
                                                 </select>
                                             </td>
                                         </tr>
@@ -62,14 +62,49 @@
                                         </tr>
                                         <tr>
                                             <td width="172" align="left" valign="middle"></td>
-                                            <td>&nbsp;</td>
                                         </tr>
                                     </table>
-                                    <div align="center">
-                                        <input type="submit" value="-- Save --" />
+
+                                    <div class="button-container">
+                                        <!-- Apply Settings Button -->
+                                        <input type="submit" class="apply-button" value="-- Apply Setting --" />
+                                    </div>
+
+                                    <!--<td colspan="3" align="center" valign="middle">
+										<div align="center"><b>--------------------------------------</b></div>
+									</td>-->
+
+                                    <div class="button-container">
+                                        <button type="button" class="test-button" onclick="sendTestCommand()">
+                                            -- Test Relay --
+                                        </button>
                                     </div>
                                 </div>
                             </form>
+
+                            <script>
+                                document.getElementById('relay-control-form').addEventListener('submit', async (event) => {
+                                    event.preventDefault(); // Prevent the page from refreshing
+                            
+                                    const relay01Value = document.getElementById('relay01').value;
+                                    const relay02Value = document.getElementById('relay02').value;
+                            
+                                    const response = await fetch('/set-relay-control', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json',
+                                        },
+                                        body: JSON.stringify({ relay01: relay01Value, relay02: relay02Value }),
+                                    });
+                            
+                                    const data = await response.json();
+                                    if (response.ok) {
+                                        alert('Relay settings updated successfully!');
+                                    } else {
+                                        alert(`Error: ${data.error}`);
+                                    }
+                                });
+                            </script>
                         </div>
 
                         <div class="spacer">&nbsp;</div>
