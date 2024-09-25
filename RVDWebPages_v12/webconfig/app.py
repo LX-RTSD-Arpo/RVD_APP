@@ -131,16 +131,54 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
     write_file(rvd_config_path, rvd_config)
     print("Network settings written successfully.")
 
-def extract_version(filename):
+def extract_version():
     # Extract version after the underscore, e.g., "RVD_V1.0.0b1"
     try:
+        files = [f for f in os.listdir(firmware_path) if f.startswith('RVD')]
+        
+        if not files:
+            return None
+
+        # Sort files by their modification time (you can also sort alphabetically if needed)
+        files.sort(key=lambda f: os.path.getmtime(os.path.join(firmware_path, f)))
+
+        # Return the last file in the sorted list
+        filename = files[-1]
+
+        file_path = os.path.join(firmware_path, filename)
+        result = subprocess.run(['stat', '-c', '%y', file_path], stdout=subprocess.PIPE)
+        
         # Split the filename on '_', then get the version part
         version_part = filename.split('_')[1]
         version = version_part.split('.')[0]  # Extract only the version number
-        return version
+
+        return filename, version, result.stdout.decode('utf-8').strip()
     except IndexError:
         # Return None if filename format is incorrect
         return None
+    
+@app.route('/get-firmware-detail', methods=['POST'])
+def get_firmware_detail():
+    try:
+        data = request.json
+        filename = data.get('filename')
+
+        if not filename:
+            return jsonify({"error": "Filename is missing"}), 400
+
+        # Extract version using the extract_version function
+        filename, version, moddate = extract_version(filename)
+
+        if version:
+            return jsonify({
+                "filename": filename,
+                "version": version,
+                "build_date": moddate
+                }), 200
+        else:
+            return jsonify({"error": "Invalid filename format"}), 400
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
     
 @app.route('/upload-firmware', methods=['POST'])
 def upload_firmware():
@@ -156,12 +194,7 @@ def upload_firmware():
         # Save the file to the specified folder
         file_path = os.path.join(app.config['firmware_path'], file.filename)
         file.save(file_path)
-
-        version = extract_version(file.filename)
-            
-        if not version:
-            return jsonify({"error": "Invalid file name format for version extraction"}), 400
-
+        
         #output_filename = f"rvd_{version}"
         #output_file_path = os.path.join(app.config['firmware_path'], output_filename)
         gcc_command = f"gcc {file_path} -o /root/RVD_APP/sources/rvd-v1.0.0b1 -lpthread -lmodbus"
@@ -171,7 +204,7 @@ def upload_firmware():
         if process.returncode != 0:
             return jsonify({"error": process.stderr.decode('utf-8')}), 500
 
-        return jsonify({"message": f"{file.filename} uploaded and compiled successfully", "version": version}), 200
+        return jsonify({"message": f"{file.filename} uploaded and compiled successfully"}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

@@ -20,6 +20,33 @@ function sendTestCommand() {
     });
 }
 
+async function fetchRVDData() {
+	try {
+		const response = await fetch('/get-firmware-detail');
+		const data = await response.json();
+
+		if (response.ok) {
+			// Fill in the table with the fetched data
+			document.getElementById('filename').textContent = data.filename;
+			document.getElementById('version').textContent = data.version;
+			document.getElementById('moddate').textContent = data.moddate;
+		} else {
+			// Display an error message if the data couldn't be retrieved
+			document.getElementById('filename').textContent = 'Error';
+			document.getElementById('version').textContent = data.error;
+			document.getElementById('moddate').textContent = 'N/A';
+		}
+	} catch (error) {
+		// Handle network errors or issues
+		document.getElementById('filename').textContent = 'File not found';
+		document.getElementById('version').textContent = 'N/A';
+		document.getElementById('moddate').textContent = 'N/A';
+		console.error('Error fetching data:', error);
+	}
+}
+
+// Call the function when the page loads
+window.onload = fetchRVDData;
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**

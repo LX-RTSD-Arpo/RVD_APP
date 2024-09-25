@@ -39,15 +39,15 @@
 										</tr>
 										<tr>
 											<td><b>Description:</b></td>
-											<td id="titlex">~firmware_description~</td>
+											<td id="titlex"><span id="filename">~firmware_description~</span></td>
 										</tr>
 										<tr>
 											<td><b>Version:</b></td>
-											<td id="titlex">~firmware_version~</td>
+											<td id="titlex"><span id="version">~firmware_version~</span></td>
 										</tr>
 										<tr>
 											<td><b>Build date:</b></td>
-											<td id="titlex"><span id="version">~firmware_build~</span></td>
+											<td id="titlex"><span id="moddate">~firmware_build~</span></td>
 										</tr>
 										<tr>
 											<td colspan="3" align="center" valign="middle">
@@ -75,7 +75,7 @@
 
 									<button onclick="sendRebootCommand()" style="height:30px; width:180px;">-- Reboot Device --</button>
 
-									
+
 								</div>
 							</form>
 
@@ -102,7 +102,6 @@
 
 											if (response.ok) {
 												alert(result.message)
-												document.getElementById('version').textContent = `Extracted version: ${data.version}`;
 												document.getElementById('upload-status').innerText = 'File uploaded successfully!';
 											} else {
 												document.getElementById('upload-status').innerText = `Error: ${result.error}`;
@@ -115,6 +114,8 @@
 										alert('Please select a file to upload.');
 									}
 								});
+
+								window.onload = fetchRVDData;
 							</script>
 						</div>
 						<!--<script type="text/javascript">
