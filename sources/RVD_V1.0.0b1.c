@@ -1022,11 +1022,11 @@ int main(int argc, char *argv[])
                                 {
                                     if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0)
                                     {
-                                        *reset_output1_enable = atoi(value);
+                                        reset_output1_enable = atoi(value);
                                     }
                                     else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
                                     {
-                                        *reset_output2_enable = atoi(value);
+                                        reset_output2_enable = atoi(value);
                                     }
                                 }
                             }
