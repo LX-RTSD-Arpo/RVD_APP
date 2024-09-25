@@ -12,6 +12,9 @@ eth1_path = '/etc/network/interfaces.d/eth1'
 br0_path = '/etc/network/interfaces.d/br0'
 rvd_config_path = '/root/RVD_APP/config.txt'
 
+firmware_path = '/root/RVD_APP/sources'
+app.config['firmware_path'] = firmware_path
+
 web_config = configparser.ConfigParser()
 web_config.read(web_config_path)
 
@@ -128,6 +131,50 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
     write_file(rvd_config_path, rvd_config)
     print("Network settings written successfully.")
 
+def extract_version(filename):
+    # Extract version after the underscore, e.g., "RVD_V1.0.0b1"
+    try:
+        # Split the filename on '_', then get the version part
+        version_part = filename.split('_')[1]
+        version = version_part.split('.')[0]  # Extract only the version number
+        return version
+    except IndexError:
+        # Return None if filename format is incorrect
+        return None
+    
+@app.route('/upload-file', methods=['POST'])
+def upload_file():
+    try:
+        if 'file' not in request.files:
+            return jsonify({"error": "No file part in the request"}), 400
+
+        file = request.files['file']
+
+        if file.filename == '':
+            return jsonify({"error": "No selected file"}), 400
+
+        # Save the file to the specified folder
+        file_path = os.path.join(app.config['firmware'], file.filename)
+        file.save(file_path)
+
+        version = extract_version(file.filename)
+            
+        if not version:
+            return jsonify({"error": "Invalid file name format for version extraction"}), 400
+
+        #output_filename = f"rvd_{version}"
+        #output_file_path = os.path.join(app.config['firmware_path'], output_filename)
+        gcc_command = f"gcc {file_path} -o /root/RVD_APP/sources/rvd-v1.0.0b1 -lpthread -lmodbus"
+
+        process = subprocess.run(gcc_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+
+        if process.returncode != 0:
+            return jsonify({"error": process.stderr.decode('utf-8')}), 500
+
+        return jsonify({"message": f"{file.filename} uploaded and compiled successfully", "version": version}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/get-network-settings', methods=['GET'])
 def get_network_settings():
     print("GET request received for network settings.")

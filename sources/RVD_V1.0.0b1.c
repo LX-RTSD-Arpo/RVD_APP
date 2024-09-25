@@ -890,7 +890,7 @@ int main(int argc, char *argv[])
                                 float voltage = 0;
                                 for (int i = 0; i < REGIS_COUNT; i++)
                                 {
-                                    voltage = (input_registers[i] / 400) * 24;
+                                    voltage = ((float)input_registers[i] / 400) * 24;
                                     // voltage = (voltage/ 1024) * 61;
                                     printf("\t\t\nInput Voltage CH%d = %u ", i + 1, (int)voltage);
                                     tcp_pack[b++] = (int)voltage;

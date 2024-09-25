@@ -2,11 +2,7 @@ function sendRebootCommand() {
     fetch('/reboot', {
         method: 'POST',
     }).then(response => {
-        if (response.ok) {
-            alert("Reboot command sent successfully!");
-        } else {
-            alert("Failed to send reboot command.");
-        }
+        alert("Reboot command sent successfully!");
     }).catch(error => {
         console.error("Error:", error);
         alert("Error sending reboot command.");
