@@ -142,7 +142,7 @@ def extract_version(filename):
         # Return None if filename format is incorrect
         return None
     
-@app.route('/upload-file', methods=['POST'])
+@app.route('/upload-firmware', methods=['POST'])
 def upload_file():
     try:
         if 'file' not in request.files:
