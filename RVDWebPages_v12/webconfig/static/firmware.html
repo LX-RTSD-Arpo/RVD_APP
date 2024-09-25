@@ -56,7 +56,7 @@
 										</tr>
 										<tr>
 											<td><b>Firmware Upgrade:</b></td>
-											<td id="titlex"><input id="firmware-input" type=file name=i size=40></td>
+											<td id="titlex"><input id="firmware-input" name="file" type=file size=40 required></td>
 										</tr>
 										<tr>
 											<td colspan="3" align="center" valign="middle">
@@ -88,7 +88,7 @@
 
 									if (firmware) {
 										const formData = new FormData();
-										formData.append('firmware', firmware);
+										formData.append('file', firmware);
 
 										try {
 											const response = await fetch('/upload-firmware', {
