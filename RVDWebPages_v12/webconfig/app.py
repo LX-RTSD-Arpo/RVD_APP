@@ -167,7 +167,7 @@ def get_firmware_detail():
             return jsonify({"error": "Filename is missing"}), 400
 
         # Extract version using the extract_version function
-        filename, version, moddate = extract_version(filename)
+        filename, version, moddate = extract_version()
 
         if version:
             return jsonify({
