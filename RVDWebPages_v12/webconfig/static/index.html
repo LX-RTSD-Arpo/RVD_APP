@@ -122,7 +122,15 @@
                                     }
                                 }
                                 
-                                fetchRVDData();
+                                function displayFirmwareName() {
+                                    const firmwareName = localStorage.getItem('firmwareName');
+                                    if (firmwareName) {
+                                        document.getElementById('filename').textContent = firmwareName;
+                                    } else {
+                                        document.getElementById('filename').textContent = 'firmware not available';
+                                    }
+                                }
+                                displayFirmwareName()
                                 fetchCurrentSettings();
                             </script>
                         </div>

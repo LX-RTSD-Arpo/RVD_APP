@@ -30,6 +30,7 @@ async function fetchRVDData() {
 			document.getElementById('filename').textContent = data.filename;
 			document.getElementById('version').textContent = data.version;
 			document.getElementById('moddate').textContent = data.moddate;
+			localStorage.setItem('firmwareName', data.filename);
 		} else {
 			// Display an error message if the data couldn't be retrieved
 			document.getElementById('filename').textContent = 'Error';
