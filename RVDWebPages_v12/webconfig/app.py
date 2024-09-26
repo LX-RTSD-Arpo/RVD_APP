@@ -136,7 +136,7 @@ def extract_version():
         files = [f for f in os.listdir(firmware_path) if f.startswith('RVD')]
         
         if not files:
-            return None
+            return 'None', 'None', 'None'
 
         # Sort files by their modification time (you can also sort alphabetically if needed)
         files.sort(key=lambda f: os.path.getmtime(os.path.join(firmware_path, f)))
