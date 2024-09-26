@@ -176,26 +176,20 @@ def extract_version():
         print(f"An unexpected error occurred: {e}")
         return None
     
-@app.route('/get-firmware-detail', methods=['POST'])
+@app.route('/get-firmware-detail', methods=['GET'])
 def get_firmware_detail():
     try:
-        #data = request.json
-        # filename = data.get('filename')
-
-        # if not filename:
-        #     return jsonify({"error": "Filename is missing"}), 400
-
         # Extract version using the extract_version function
         filename, version, moddate = extract_version()
 
-        # if version:
-        return jsonify({
-            "filename": filename,
-            "version": version,
-            "moddate": moddate
+        if filename and version:
+            return jsonify({
+                "filename": filename,
+                "version": version,
+                "moddate": moddate
             }), 200
-        # else:
-        #     return jsonify({"error": "Invalid filename format"}), 400
+        else:
+            return jsonify({"error": "Invalid filename format"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
