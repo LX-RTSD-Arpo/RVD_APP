@@ -45,8 +45,6 @@ async function fetchRVDData() {
 	}
 }
 
-// Call the function when the page loads
-window.onload = fetchRVDData;
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**
