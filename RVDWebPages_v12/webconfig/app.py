@@ -140,7 +140,7 @@ def extract_version():
 
         # Sort files by their modification time (you can also sort alphabetically if needed)
         files.sort(key=lambda f: os.path.getmtime(os.path.join(firmware_path, f)))
-
+        
         # Return the last file in the sorted list
         filename = files[-1]
 
@@ -172,7 +172,7 @@ def get_firmware_detail():
             return jsonify({
                 "filename": filename,
                 "version": version,
-                "build_date": moddate
+                "moddate": moddate
                 }), 200
         else:
             return jsonify({"error": "Invalid filename format"}), 400
