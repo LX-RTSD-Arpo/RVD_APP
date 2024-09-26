@@ -145,6 +145,9 @@ def extract_version():
         filename = files[-1]
         file_path = os.path.join(firmware_path, filename)
 
+        if filename.endswith('.c'):
+            filename = filename[:-2]  # Strip the last two characters ('.c')
+            
         # Extract the version from the filename
         parts = filename.split('_')
         
