@@ -94,9 +94,10 @@
                                 </table>
                             </div>
 
-                            <!--<div id="current-settings">
-                            <p>กำลังโหลดการตั้งค่า...</p>
-                        </div>-->
+                            <div id="upload-status">
+                                <p>กำลังโหลดการตั้งค่า...</p>
+                            </div>
+
                             <script>
                                 async function fetchCurrentSettings() {
                                     try {
@@ -114,10 +115,10 @@
                                             document.getElementById('secondary_dns').textContent = data.secondary_dns;
                                             // document.getElementById('version').textContent = data.version;
                                         } else {
-                                            document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
+                                            document.getElementById('upload-status').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
                                         }
                                     } catch (error) {
-                                        document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
+                                        document.getElementById('upload-status').innerHTML = `<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
                                     }
                                 }
                                 fetchRVDData();

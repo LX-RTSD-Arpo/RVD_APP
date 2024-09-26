@@ -41,7 +41,7 @@ async function fetchRVDData() {
 		document.getElementById('filename').textContent = 'File not found';
 		document.getElementById('version').textContent = 'N/A';
 		document.getElementById('moddate').textContent = 'N/A';
-		console.error('Error fetching data:', error);
+		document.getElementById('upload-status').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
 	}
 }
 

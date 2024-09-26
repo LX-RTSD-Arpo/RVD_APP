@@ -79,7 +79,9 @@
 								</div>
 							</form>
 
-							<div id="upload-status"></div>
+							<div id="upload-status">
+                                <p>กำลังโหลดการตั้งค่า...</p>
+                            </div>
 
 							<script>
 								document.getElementById('firmware-upload-form').addEventListener('submit', async function (event) {
@@ -107,8 +109,8 @@
 												document.getElementById('upload-status').innerText = `Error: ${result.error}`;
 											}
 										} catch (error) {
-											console.error('Error uploading file:', error);
-											//document.getElementById('upload-status').innerText = 'Error uploading file.';
+											//console.error('Error uploading file:', error);
+											document.getElementById('upload-status').innerText = 'Error uploading file.';
 										}
 									} else {
 										alert('Please select a file to upload.');

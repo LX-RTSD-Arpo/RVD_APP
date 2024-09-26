@@ -159,7 +159,7 @@ def extract_version():
 @app.route('/get-firmware-detail', methods=['POST'])
 def get_firmware_detail():
     try:
-        data = request.json
+        #data = request.json
         # filename = data.get('filename')
 
         # if not filename:
