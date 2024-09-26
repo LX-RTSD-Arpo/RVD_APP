@@ -131,29 +131,49 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
     print("Network settings written successfully.")
 
 def extract_version():
-    # Extract version after the underscore, e.g., "RVD_V1.0.0b1"
     try:
+        # Get list of files that start with 'RVD'
         files = [f for f in os.listdir(firmware_path) if f.startswith('RVD')]
         
         if not files:
-            return 'None', 'None', 'None'
+            return None
 
-        # Sort files by their modification time (you can also sort alphabetically if needed)
+        # Sort files by their modification time (latest last)
         files.sort(key=lambda f: os.path.getmtime(os.path.join(firmware_path, f)))
         
-        # Return the last file in the sorted list
+        # Get the latest file
         filename = files[-1]
-
         file_path = os.path.join(firmware_path, filename)
-        result = subprocess.run(['stat', '-c', '%y', file_path], stdout=subprocess.PIPE)
-        
-        # Split the filename on '_', then get the version part
-        version_part = filename.split('_')[1]
-        version = version_part.split('.')[0]  # Extract only the version number
 
-        return filename, version, result.stdout.decode('utf-8').strip()
+        # Extract the version from the filename
+        parts = filename.split('_')
+        
+        if len(parts) < 2:
+            # If there is no part after '_', return None
+            return None
+        
+        version_part = parts[1]  # The part after '_'
+        version = version_part.split('.')[0]  # Get version before first dot
+
+        # Optionally get the file's last modification time
+        modification_time = os.path.getmtime(file_path)
+        
+        # Return the filename, version, and formatted modification time
+        result = subprocess.run(['stat', '-c', '%y', file_path], stdout=subprocess.PIPE)
+        timestamp = result.stdout.decode('utf-8').strip()
+        
+        return filename, version, timestamp
+    
+    except FileNotFoundError:
+        print(f"Error: The path {firmware_path} does not exist.")
+        return None
     except IndexError:
         # Return None if filename format is incorrect
+        print("Error: Filename format is incorrect.")
+        return None
+    except Exception as e:
+        # Catch any other exceptions and print the error
+        print(f"An unexpected error occurred: {e}")
         return None
     
 @app.route('/get-firmware-detail', methods=['POST'])
