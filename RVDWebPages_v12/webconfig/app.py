@@ -162,7 +162,7 @@ def extract_version():
         result = subprocess.run(['stat', '-c', '%y', file_path], stdout=subprocess.PIPE)
         timestamp = result.stdout.decode('utf-8').strip()
         
-        return filename, version, timestamp
+        return filename, version_part, timestamp
     
     except FileNotFoundError:
         print(f"Error: The path {firmware_path} does not exist.")
