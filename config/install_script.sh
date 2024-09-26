@@ -42,7 +42,7 @@ sysctl -p
 echo "The line 'net.ipv4.ip_forward=1' has been uncommented and sysctl settings reloaded."
 
 gcc /root/RVD_APP/sources/RVD_V1.0.0b1.c -o /root/RVD_APP/sources/rvd-v1.0.0b1 -lpthread -lmodbus
-gcc /root/RVD_APP/tests/IO_Test.c -o /root/RVD_APP/tests/iotest8 -lmodbus
+gcc /root/RVD_APP/tests/IO_Test.c -o /root/RVD_APP/tests/iotest -lmodbus
 
 sed -i -e 's/\r$//' /root/RVD_APP/run.sh
 sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_on.sh
@@ -78,7 +78,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # +---------- Minute (0 - 59)
 
 * * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute 
-0 * * * * /usr/sbin/ntpdate 10.13.80.254
+0 * * * * /usr/sbin/ntpdate 10.13.80.254 > /dev/null 2>&1
 
 EOF
 )

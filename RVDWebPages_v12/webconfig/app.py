@@ -2,20 +2,22 @@ import os
 from flask import Flask, jsonify, request, send_from_directory
 import configparser
 import subprocess
+import crontab
 
 app = Flask(__name__)
 
 web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_config.ini')
-eth0_path = '/etc/network/interfaces.d/eth0'
-eth1_path = '/etc/network/interfaces.d/eth1'
-br0_path = '/etc/network/interfaces.d/br0'
-rvd_config_path = '/root/RVD_APP/config.txt'
-
-firmware_path = '/root/RVD_APP/sources'
-app.config['firmware_path'] = firmware_path
 
 web_config = configparser.ConfigParser()
 web_config.read(web_config_path)
+
+eth0_path = web_config.get('filepaths', '/etc/network/interfaces.d/eth0')
+eth1_path = web_config.get('filepaths', '/etc/network/interfaces.d/eth1')
+br0_path = web_config.get('filepaths', '/etc/network/interfaces.d/br0')
+rvd_config_path = web_config.get('filepaths', '/root/RVD_APP/config.txt')
+firmware_path = web_config.get('filepaths', '/root/RVD_APP/sources')
+
+app.config['firmware_path'] = firmware_path
 
 def read_file(file_path):
     try:
@@ -53,7 +55,7 @@ def parse_eth_config(lines1, lines2, lines3):
             elif line2.startswith('post-up'):
                 parts = line2.split()
                 if len(parts) > 4 and parts[3] == 'add':
-                    config['radarip'] = parts[4].split('/')[0]  # Get the IP address
+                    config['radarip'] = parts[4].split('/')[0]
 
         for line3 in lines3:
             line3 = line3.strip()
@@ -73,7 +75,6 @@ def write_file(file_path, lines):
         return str(e)
     
 def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns):
-    #print(f"Writing network settings to config.ini: Host={host_address} IP={ip_address}, Gateway={gateway}, Subnet Mask={subnet_mask}, Primary DNS={primary_dns}, Secondary DNS={secondary_dns}")
     eth0_config = [
         f"auto eth0\n",
         f"iface eth0 inet static\n",
@@ -119,9 +120,9 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
         f"SERVER_PORT= 50002\n\n",
         f"RESPONSE_SENDER={device_id}\n",
         f"RESPONSE_RECEIVER=0\n\n",
-        f"DEVICE_NETWORK_TIMEOUT=30\n",
+        f"DEVICE_NETWORK_TIMEOUT=30\n\n",
         f"RESET_OUTPUT1_ENABLE=1\n",
-        f"RESET_OUTPUT2_ENABLE=1\n",
+        f"RESET_OUTPUT2_ENABLE=1\n\n",
     ]
 
     write_file(eth0_path, eth0_config)
@@ -132,36 +133,29 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
 
 def extract_version():
     try:
-        # Get list of files that start with 'RVD'
         files = [f for f in os.listdir(firmware_path) if f.startswith('RVD')]
         
         if not files:
             return None
 
-        # Sort files by their modification time (latest last)
         files.sort(key=lambda f: os.path.getmtime(os.path.join(firmware_path, f)))
         
-        # Get the latest file
         filename = files[-1]
         file_path = os.path.join(firmware_path, filename)
 
         if filename.endswith('.c'):
-            filename = filename[:-2]  # Strip the last two characters ('.c')
-            
-        # Extract the version from the filename
+            filename = filename[:-2]
+
         parts = filename.split('_')
         
         if len(parts) < 2:
-            # If there is no part after '_', return None
             return None
         
-        version_part = parts[1]  # The part after '_'
-        version = version_part.split('.')[0]  # Get version before first dot
+        version_part = parts[1]
+        #version = version_part.split('.')[0]
 
-        # Optionally get the file's last modification time
-        modification_time = os.path.getmtime(file_path)
+        #modification_time = os.path.getmtime(file_path)
         
-        # Return the filename, version, and formatted modification time
         result = subprocess.run(['stat', '-c', '%y', file_path], stdout=subprocess.PIPE)
         timestamp = result.stdout.decode('utf-8').strip()
         
@@ -179,6 +173,29 @@ def extract_version():
         print(f"An unexpected error occurred: {e}")
         return None
     
+def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
+    try:
+        ntpdate_cmd = f"ntpdate {ntppriserver}"
+        subprocess.run(ntpdate_cmd, shell=True, check=True)
+
+        # Get current crontab for the user
+        current_crontab = subprocess.check_output("crontab -l", shell=True).decode('utf-8')
+
+        # Define the cron job command for ntpdate sync
+        cron_job = f"*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
+
+        if ntpautosync:
+            if cron_job not in current_crontab:
+                updated_crontab = current_crontab + "\n" + cron_job + "\n"
+                subprocess.run(f'(echo "{updated_crontab}") | crontab -', shell=True, check=True)
+        else:
+            updated_crontab = current_crontab.replace(cron_job, f"# {cron_job}")
+            subprocess.run(f'(echo "{updated_crontab}") | crontab -', shell=True, check=True)
+
+        print("NTP settings updated successfully.")
+    except subprocess.CalledProcessError as e:
+        print(f"Error running the command: {e}")
+
 @app.route('/get-firmware-detail', methods=['GET'])
 def get_firmware_detail():
     try:
@@ -207,7 +224,6 @@ def upload_firmware():
         if file.filename == '':
             return jsonify({"error": "No selected file"}), 400
 
-        # Save the file to the specified folder
         file_path = os.path.join(app.config['firmware_path'], file.filename)
         file.save(file_path)
         
@@ -243,8 +259,8 @@ def get_network_settings():
 
 @app.route('/set-network-settings', methods=['POST'])
 def set_network_settings():
-    print("POST request received to set network settings.")
     data = request.get_json()
+
     host_address = data.get('host')
     radarip = data.get('radarip')
     device_id = data.get('device_id')
@@ -254,8 +270,7 @@ def set_network_settings():
     subnet_mask = data.get('subnet_mask')
     primary_dns = data.get('primary_dns')
     secondary_dns = data.get('secondary_dns')
-    # firmware_version = data.get('firmware_version')
-    #print(f"Setting network settings to: Host={host_address} IP={ip_address}, Gateway={gateway}, Subnet Mask={subnet_mask}, Primary DNS={primary_dns}, Secondary DNS={secondary_dns}")
+
     try:
         write_network_settings(host_address, radarip, device_id, ip_address1, ip_address2, gateway, subnet_mask, primary_dns, secondary_dns)
         return jsonify(success=True)
@@ -270,7 +285,6 @@ def set_relay_control():
         relay01 = data.get('relay01')
         relay02 = data.get('relay02')
 
-        # Process the relay settings here
         print(f"Relay 1: {relay01}, Relay 2: {relay02}")
 
         with open(rvd_config_path, 'r') as file:
@@ -296,6 +310,22 @@ def test_relay():
         return jsonify({"message": "Test command sent."}), 200
     except Exception as e:
         return jsonify({"error": str(e)}), 500
+    
+@app.route('/set-ntp-settings', methods=['POST'])
+def set_ntp_settings():
+    data = request.get_json()
+
+    ntppriserver = data.get('ntppriserver')
+    ntpautosync = data.get('ntpautosync')
+    ntptimesync = data.get('ntptimesync')
+    ntptimeout = data.get('ntptimeout')
+    
+    try:
+        write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout)
+        return jsonify(success=True)
+    except Exception as e:
+        print(f"Error setting network settings: {e}")
+        return jsonify(error=str(e)), 500
     
 @app.route('/reboot', methods=['POST'])
 def reboot_device():
