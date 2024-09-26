@@ -17,12 +17,11 @@ int parse_config(const char *filename, uint8_t *reset_output1_enable, uint8_t *r
     FILE *file = fopen(filename, "r");
     if (!file)
     {
-        perror("Unable to open configuration filee");
+        perror("Unable to open configuration file");
         return -1;
     }
 
     char line[256];
-
     while (fgets(line, sizeof(line), file))
     {
         char *key = strtok(line, "=");
@@ -41,128 +40,97 @@ int parse_config(const char *filename, uint8_t *reset_output1_enable, uint8_t *r
     return 0;
 }
 
+int try_open_serial_port(const char *port_format, int attempt, char *serial_port)
+{
+    snprintf(serial_port, 20, port_format, attempt);
+    int fd = open(serial_port, O_RDWR | O_NOCTTY);
+    if (fd == -1)
+    {
+        if (errno == ENOENT)
+        {
+            printf("%s does not exist. Trying the next port...\n", serial_port);
+        }
+        else
+        {
+            perror("Error opening serial port");
+        }
+    }
+    return fd;
+}
+
 int main() {
     uint8_t reset_output1_enable = 1;
     uint8_t reset_output2_enable = 1;
+
     if (parse_config("../config.txt", &reset_output1_enable, &reset_output2_enable) != 0)
     {
         fprintf(stderr, "Failed to parse configuration file\n");
+        return -1;
     }
 
     int attempts = 0;
-    int fd, mc;
-    float voltage = 0;
+    int fd = -1;
     char serial_port[20];
-    modbus_t *ctx;
+    modbus_t *ctx = NULL;
     uint16_t holding_registers[REGIS_COUNT] = {0};  // Array to store received data
     uint16_t input_registers[REGIS_COUNT] = {0};
     uint8_t coils[REGIS_COUNT] = {0};
 
-    while (attempts < MAX_SERIAL_PORT_ATTEMPTS)
+    // Try /dev/ttyUSB and /dev/ttyACM for MAX_SERIAL_PORT_ATTEMPTS times
+    while (attempts < MAX_SERIAL_PORT_ATTEMPTS && fd == -1)
     {
-        snprintf(serial_port, sizeof(serial_port), "/dev/ttyUSB%d", attempts);
-        fd = open(serial_port, O_RDWR | O_NOCTTY);
+        fd = try_open_serial_port("/dev/ttyUSB%d", attempts, serial_port);
+        if (fd == -1)
+            fd = try_open_serial_port("/dev/ttyACM%d", attempts, serial_port);
 
-        if (fd != -1)
-        {
-            printf("Serial port %s opened successfully.\n", serial_port);
-            break;
-        }
-        else
-        {
-            if (errno == ENOENT)
-            {
-                printf("%s does not exist. Trying the next port...\n", serial_port);
-            }
-            else
-            {
-                perror("Error opening serial port");
-                break;
-            }
-        }
-
-        snprintf(serial_port, sizeof(serial_port), "/dev/ttyACM%d", attempts);
-        fd = open(serial_port, O_RDWR | O_NOCTTY);
-
-        if (fd != -1)
-        {
-            printf("Serial port %s opened successfully.\n", serial_port);
-            close(fd);
-            break;
-        }
-        else
-        {
-            if (errno == ENOENT)
-            {
-                printf("%s does not exist. Trying the next port...\n", serial_port);
-            }
-            else
-            {
-                perror("Error opening serial port");
-                break;
-            }
-        }
         attempts++;
     }
 
-    ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
-    modbus_set_response_timeout(ctx, 5, 0);
-    if (ctx == NULL || mc == -1)
+    if (fd == -1)
     {
-        if (ctx == NULL)
-        {
-            printf("\n\t[-]ERROR!! --> No device connected on %s", serial_port);
-            return -2;
-        }
-
-        if (mc == -1)
-        {
-            printf("\n\t[-]ERROR!! --> Can't connect to I/O!!\n");
-            return -3;
-        }
+        fprintf(stderr, "Failed to open any serial ports after %d attempts\n", MAX_SERIAL_PORT_ATTEMPTS);
+        return -1;
+    }
+    else
+    {
+        printf("Serial port %s opened successfully.\n", serial_port);
+        close(fd); // Close since we only need this for verification.
     }
 
-    // Set the MODBUS slave address
+    ctx = modbus_new_rtu(serial_port, 9600, 'N', 8, 1);
+    if (ctx == NULL)
+    {
+        fprintf(stderr, "Unable to create the libmodbus context\n");
+        return -2;
+    }
+
     modbus_set_slave(ctx, SLAVEID);
-    mc = modbus_connect(ctx);
+    modbus_set_response_timeout(ctx, 5, 0);
+
+    // Attempt to connect to the device
+    int mc = modbus_connect(ctx);
     if (mc == -1)
     {
-        fprintf(stderr, "\n\t[-]Connection failed: %s\n", modbus_strerror(errno));
+        fprintf(stderr, "Connection failed: %s\n", modbus_strerror(errno));
         modbus_free(ctx);
         return -3;
     }
 
-    /*int ri = modbus_read_input_registers(ctx, REGIS_START, REGIS_COUNT, input_registers);
-    if (ri == -1)
-    {
-        fprintf(stderr, "\n[-]MODBUS read error: %s\n", modbus_strerror(errno));
-        //modbus_close(ctx);
-        //modbus_free(ctx);
-        //return -3;
-    }
-    else
-    {
-        for (int i = 0; i < REGIS_COUNT; i++)
-        {
-            voltage = ((float)input_registers[i] / 400) * 24;
-            printf("\t\t\nInput Voltage CH%d = %d ", i + 1, (int)voltage);
-        }
-    }*/
-    
     coils[0] = reset_output1_enable;
     coils[1] = reset_output2_enable;
-    
+
     int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
     if (rcw == -1)
     {
-        fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));
-        //modbus_close(ctx);
-        //modbus_free(ctx);
-        //return -3;
+        fprintf(stderr, "MODBUS Write error: %s\n", modbus_strerror(errno));
+        modbus_close(ctx);
+        modbus_free(ctx);
+        return -3;
     }
-    // Close the MODBUS RTU connection
-    //modbus_close(ctx);
-    //modbus_free(ctx);
+
+    // Cleanup: Close the MODBUS connection and free the context
+    modbus_close(ctx);
+    modbus_free(ctx);
 
     return 0;
 }
