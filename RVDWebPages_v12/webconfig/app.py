@@ -160,10 +160,10 @@ def extract_version():
 def get_firmware_detail():
     try:
         data = request.json
-        filename = data.get('filename')
+        # filename = data.get('filename')
 
-        if not filename:
-            return jsonify({"error": "Filename is missing"}), 400
+        # if not filename:
+        #     return jsonify({"error": "Filename is missing"}), 400
 
         # Extract version using the extract_version function
         filename, version, moddate = extract_version()
