@@ -168,14 +168,14 @@ def get_firmware_detail():
         # Extract version using the extract_version function
         filename, version, moddate = extract_version()
 
-        if version:
-            return jsonify({
-                "filename": filename,
-                "version": version,
-                "moddate": moddate
-                }), 200
-        else:
-            return jsonify({"error": "Invalid filename format"}), 400
+        # if version:
+        return jsonify({
+            "filename": filename,
+            "version": version,
+            "moddate": moddate
+            }), 200
+        # else:
+        #     return jsonify({"error": "Invalid filename format"}), 400
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     

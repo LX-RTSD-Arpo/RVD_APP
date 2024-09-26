@@ -38,8 +38,8 @@ async function fetchRVDData() {
 		}
 	} catch (error) {
 		// Handle network errors or issues
-		document.getElementById('filename').textContent = 'File not Found';
-		document.getElementById('version').textContent = data.error;
+		document.getElementById('filename').textContent = 'File not found';
+		document.getElementById('version').textContent = 'N/A';
 		document.getElementById('moddate').textContent = 'N/A';
 		document.getElementById('upload-status').textContent = data.error;
 	}
