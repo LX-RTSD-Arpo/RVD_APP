@@ -5,7 +5,6 @@ import subprocess
 
 app = Flask(__name__)
 
-# กำหนด path สำหรับ config.ini ที่อยู่ในโฟลเดอร์เดียวกับ app.py
 web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_config.ini')
 eth0_path = '/etc/network/interfaces.d/eth0'
 eth1_path = '/etc/network/interfaces.d/eth1'
@@ -276,7 +275,6 @@ def set_relay_control():
 @app.route('/test-relay', methods=['POST'])
 def test_relay():
     try:
-        # Send the reboot command to the terminal
         result = subprocess.run(['/root/RVD_APP/tests/iotest'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return jsonify({"message": "Test command sent."}), 200
     except Exception as e:
@@ -285,7 +283,6 @@ def test_relay():
 @app.route('/reboot', methods=['POST'])
 def reboot_device():
     try:
-        # Send the reboot command to the terminal
         os.system('sudo reboot')
         return jsonify({"message": "Reboot command sent."}), 200
     except Exception as e:
