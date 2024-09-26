@@ -62,7 +62,7 @@ int main() {
     uint8_t reset_output1_enable = 1;
     uint8_t reset_output2_enable = 1;
 
-    if (parse_config("../config.txt", &reset_output1_enable, &reset_output2_enable) != 0)
+    if (parse_config("/root/RVD/config.txt", &reset_output1_enable, &reset_output2_enable) != 0)
     {
         fprintf(stderr, "Failed to parse configuration file\n");
         return -1;

@@ -1004,7 +1004,7 @@ int main(int argc, char *argv[])
                                 }
                             }
 
-                            FILE *file = fopen("../config.txt", "r");
+                            FILE *file = fopen("/root/RVD_APP/config.txt", "r");
                             if (!file)
                             {
                                 perror("Unable to open configuration filee");
