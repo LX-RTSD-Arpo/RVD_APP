@@ -2,7 +2,6 @@ import os
 from flask import Flask, jsonify, request, send_from_directory
 import configparser
 import subprocess
-import crontab
 
 app = Flask(__name__)
 
@@ -11,11 +10,11 @@ web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_
 web_config = configparser.ConfigParser()
 web_config.read(web_config_path)
 
-eth0_path = web_config.get('filepaths', '/etc/network/interfaces.d/eth0')
-eth1_path = web_config.get('filepaths', '/etc/network/interfaces.d/eth1')
-br0_path = web_config.get('filepaths', '/etc/network/interfaces.d/br0')
-rvd_config_path = web_config.get('filepaths', '/root/RVD_APP/config.txt')
-firmware_path = web_config.get('filepaths', '/root/RVD_APP/sources')
+eth0_path = web_config.get('filepaths', 'eth0_path')
+eth1_path = web_config.get('filepaths', 'eth1_path')
+br0_path = web_config.get('filepaths', 'br0_path')
+rvd_config_path = web_config.get('filepaths', 'rvd_config_path')
+firmware_path = web_config.get('filepaths', 'firmware_path')
 
 app.config['firmware_path'] = firmware_path
 
@@ -308,6 +307,47 @@ def test_relay():
     try:
         result = subprocess.run(['/root/RVD_APP/tests/iotest'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         return jsonify({"message": "Test command sent."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
+@app.route('/get-ntp-settings', methods=['POST'])
+def get_ntp_settings():
+    try:
+        ntp_server = web_config.get('ntpsettings', 'ntp_server', fallback=None)
+        ntp_timesync = web_config.get('ntpsettings', 'ntp_timesync', fallback=None)
+        ntp_timeout = web_config.get('ntpsettings', 'ntp_timeout', fallback=None)
+
+        ntpdate_output = subprocess.check_output(["ntpdate", "-q", ntp_server], stderr=subprocess.STDOUT)
+        ntpdate_output = ntpdate_output.decode("utf-8")
+
+        if "no server suitable" in ntpdate_output:
+            status = "NTP server unreachable"
+        elif "adjust time server" in ntpdate_output:
+            status = "NTP synchronized"
+        else:
+            status = "NTP status unknown"
+
+        crontab_output = subprocess.check_output(["crontab", "-l"], stderr=subprocess.STDOUT)
+        crontab_lines = crontab_output.decode("utf-8").splitlines()
+
+        ntp_autosync = "OFF"  # Default value if ntpautosync is not found
+
+        for line in crontab_lines:
+            if 'ntpdate' in line:
+                if line.strip().startswith('#'):
+                    ntp_autosync = "OFF"  # ntpdate line is commented
+                else:
+                    ntp_autosync = "ON"  # ntpdate line is not commented
+                break
+
+        return jsonify({
+                "ntp_priserver": ntp_server,
+                "ntp_status": status,
+                "ntp_autosync": ntp_autosync,
+                "ntp_timesync": ntp_timesync,
+                "ntp_timeout": ntp_timeout
+            }), 200
+
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
