@@ -57,7 +57,8 @@
 										</tr>
 										<tr>
 											<td><b>Firmware Upgrade:</b></td>
-											<td id="titlex"><input id="firmware-input" name="file" type=file size=40 required></td>
+											<td id="titlex"><input id="firmware-input" name="file" type=file size=40
+													required></td>
 										</tr>
 										<tr>
 											<td colspan="3" align="center" valign="middle">
@@ -74,15 +75,55 @@
 										<div align="center"><b>--------------------------------------</b></div>
 									</td>
 
-									<button onclick="sendRebootCommand()" style="height:30px; width:180px;">-- Reboot Device --</button>
+									<button onclick="sendRebootCommand()" style="height:30px; width:180px;">-- Reboot
+										Device --</button>
 								</div>
 							</form>
 
 							<div id="upload-status">
-                                <p></p>
-                            </div>
+								<p></p>
+							</div>
 
 							<script>
+								let idleTime = 0;
+								const idleLimit = 60; // seconds
+
+								function logout() {
+									alert("คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา 60 วินาที");
+									window.location.href = '/logout';
+								}
+
+								async function checkLogin() {
+									const response = await fetch('/get-login-status');
+									const data = await response.json();
+									if (!data.loggedin) {
+										window.location.href = '/login';
+									}
+								}
+
+								function resetIdleTime() {
+									idleTime = 0;
+								}
+
+								checkLogin();
+
+								setInterval(() => {
+									idleTime++;
+									if (idleTime >= idleLimit) {
+										if (confirm("คุณไม่ได้ใช้งานเป็นเวลา 60 วินาที คุณต้องการออกจากระบบหรือไม่?")) {
+											logout();
+										} else {
+											idleTime = 0; // Reset idle time
+										}
+									}
+								}, 1000);
+
+								window.onload = () => {
+									document.addEventListener('mousemove', resetIdleTime);
+									document.addEventListener('keypress', resetIdleTime);
+									document.addEventListener('click', resetIdleTime);
+									document.addEventListener('scroll', resetIdleTime);
+								};
 								document.getElementById('firmware-upload-form').addEventListener('submit', async function (event) {
 									event.preventDefault();
 

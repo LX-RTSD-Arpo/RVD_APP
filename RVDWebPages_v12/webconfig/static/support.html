@@ -1,5 +1,6 @@
 <!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
 <html>
+
 <head>
     <title>RVD-Field Web Management</title>
     <link href="/static/mchp.css" rel="stylesheet" type="text/css" />
@@ -7,43 +8,90 @@
 </head>
 
 <body>
-<div id="shadow-one">
-    <div id="shadow-two">
-        <div id="shadow-three">
-            <div id="shadow-four">
-                <div id="page">
-                    <div style="padding:0 0 5px 5px"><img src="/static/logo.gif" /></div>
+    <div id="shadow-one">
+        <div id="shadow-two">
+            <div id="shadow-three">
+                <div id="shadow-four">
+                    <div id="page">
+                        <div style="padding:0 0 5px 5px"><img src="/static/logo.gif" /></div>
                         <div id="title">
                             <div class="right">RVD-Field Processor</div><span id="hello">&nbsp;</span>
                             <div class="left">Support</div><span id="hello">&nbsp;</span>
                         </div>
-                    <div id="menu">
-                        <a href="/static/index.html" onclick="allowAJAX=false;">Home</a>
-                        <a href="/static/network.html" onclick="allowAJAX=false;">TCP/IP Setting</a>
-                        <!--<a href="/static/radarconfig.html" onclick="allowAJAX=false;">RVD Interface</a>-->
-                        <a href="/static/control.html" onclick="allowAJAX=false;">Relay Control</a>
-                        <a href="/static/firmware.html" onclick="allowAJAX=false;">Firmware</a>
-                        <a href="/static/ntp.html" onclick="allowAJAX=false;">NTP Setting</a>
-                        <a href="/static/support.html" onclick="allowAJAX=false;">Support</a>
+                        <div id="menu">
+                            <a href="/static/index.html" onclick="allowAJAX=false;">Home</a>
+                            <a href="/static/network.html" onclick="allowAJAX=false;">TCP/IP Setting</a>
+                            <!--<a href="/static/radarconfig.html" onclick="allowAJAX=false;">RVD Interface</a>-->
+                            <a href="/static/control.html" onclick="allowAJAX=false;">Relay Control</a>
+                            <a href="/static/firmware.html" onclick="allowAJAX=false;">Firmware</a>
+                            <a href="/static/ntp.html" onclick="allowAJAX=false;">NTP Setting</a>
+                            <a href="/static/support.html" onclick="allowAJAX=false;">Support</a>
+                        </div>
+
+                        <div id="content">
+                            <h2>Support</h2>
+                            <h3>RVD-Field Processor Support</h3>
+
+                            <ol>
+                                <li><b>Still not working?</b><br />
+                                    If you're experiencing issues with the RVD-Field Processor, please refer to the user
+                                    manual for detailed setup instructions and troubleshooting steps. For additional
+                                    assistance with RVD-Field Processor configuration or connection problems, don't
+                                    hesitate to contact support.
+                                </li>
+                            </ol>
+
+                            <script>
+                                let idleTime = 0;
+                                const idleLimit = 60; // seconds
+
+                                function logout() {
+                                    alert("คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา 60 วินาที");
+                                    window.location.href = '/logout';
+                                }
+
+                                async function checkLogin() {
+                                    const response = await fetch('/get-login-status');
+                                    const data = await response.json();
+                                    if (!data.loggedin) {
+                                        window.location.href = '/login';
+                                    }
+                                }
+
+                                function resetIdleTime() {
+                                    idleTime = 0;
+                                }
+
+                                checkLogin();
+
+                                setInterval(() => {
+                                    idleTime++;
+                                    if (idleTime >= idleLimit) {
+                                        if (confirm("คุณไม่ได้ใช้งานเป็นเวลา 60 วินาที คุณต้องการออกจากระบบหรือไม่?")) {
+                                            logout();
+                                        } else {
+                                            idleTime = 0; // Reset idle time
+                                        }
+                                    }
+                                }, 1000);
+
+                                window.onload = () => {
+                                    document.addEventListener('mousemove', resetIdleTime);
+                                    document.addEventListener('keypress', resetIdleTime);
+                                    document.addEventListener('click', resetIdleTime);
+                                    document.addEventListener('scroll', resetIdleTime);
+                                };
+                            </script>
+                        </div>
+
+                        <div class="spacer">&nbsp;</div>
+                        <div id="footer">Copyright &copy; 2024 Loxley Public Company Limited, Inc.</div>
+
                     </div>
-
-                    <div id="content">
-                        <h2>Support</h2>
-                        <h3>RVD-Field Processor Support</h3>
-
-                        <ol>
-							<li><b>Still not working?</b><br />
-								If you're experiencing issues with the RVD-Field Processor, please refer to the user manual for detailed setup instructions and troubleshooting steps. For additional assistance with RVD-Field Processor configuration or connection problems, don't hesitate to contact support.
-							</li>
-						</ol>
-                    </div>
-
-                    <div class="spacer">&nbsp;</div>
-                    <div id="footer">Copyright &copy; 2024 Loxley Public Company Limited, Inc.</div>
                 </div>
             </div>
         </div>
     </div>
-</div>
 </body>
+
 </html>

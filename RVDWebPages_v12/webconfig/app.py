@@ -1,9 +1,15 @@
 import os
-from flask import Flask, jsonify, request, send_from_directory
+from flask import Flask, jsonify, request, send_from_directory, render_template, redirect, url_for, session
+from werkzeug.security import generate_password_hash, check_password_hash
 import configparser
 import subprocess
+from datetime import datetime, timedelta
+from datetime import datetime
+import pytz
 
 app = Flask(__name__)
+
+app.secret_key = os.urandom(24)
 
 web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_config.ini')
 
@@ -17,6 +23,10 @@ rvd_config_path = web_config.get('filepaths', 'rvd_config_path')
 firmware_path = web_config.get('filepaths', 'firmware_path')
 
 app.config['firmware_path'] = firmware_path
+
+users = {
+    'admin': generate_password_hash('system')  # Use hashed passwords for security
+}
 
 def read_file(file_path):
     try:
@@ -401,6 +411,23 @@ def set_ntp_settings():
         print(f"Error setting network settings: {e}")
         return jsonify(error=str(e)), 500
     
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+    if request.method == 'POST':
+        username = request.form['username']
+        password = request.form['password']
+        if username in users and check_password_hash(users[username], password):
+            session['loggedin'] = True
+            return redirect(url_for('index'))
+        else:
+            return "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", 401
+    return render_template('login.html')
+
+@app.route('/logout')
+def logout():
+    session.pop('loggedin', None)  # ลบ session
+    return redirect(url_for('login'))  # Redirect ไปที่หน้า login
+
 @app.route('/reboot', methods=['POST'])
 def reboot_device():
     try:
@@ -411,8 +438,37 @@ def reboot_device():
     
 @app.route('/')
 def index():
-    print("Serving index.html")
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
     return send_from_directory('static', 'index.html')
+
+@app.route('/static/<path:path>')
+def static_files(path):
+    if 'loggedin' not in session:
+        return redirect(url_for('login'))
+    return send_from_directory('static', path)
+
+@app.route('/get-login-status', methods=['GET'])
+def get_login_status():
+    return jsonify(loggedin='loggedin' in session)
+
+@app.before_request
+def check_idle_timeout():
+    if 'loggedin' in session:
+        last_activity = session.get('last_activity')
+
+        # ตั้งค่า timezone
+        tz = pytz.timezone('Asia/Bangkok')  # เปลี่ยนเป็น timezone ที่คุณต้องการ
+        now = datetime.now(tz)
+
+        if last_activity:
+            last_activity = last_activity.astimezone(tz)  # แปลงเป็น timezone เดียวกัน
+
+            if now - last_activity > timedelta(minutes=1):  # 1 นาที
+                session.pop('loggedin', None)
+                return redirect(url_for('login'))
+
+        session['last_activity'] = now  # อัปเดตเวลาใช้งานล่าสุด
 
 if __name__ == '__main__':
     port = web_config.getint('settings', 'port', fallback=5000)

@@ -43,14 +43,14 @@
                                             <td></td>
                                         </tr>
                                         <tr>
-                                        <td width="200"><b>Radar IP Address:</b></td>
-                                        <td width="150"><input type="text" id="radarip" maxlength="15" name="radarip"
-                                                required /></td>
+                                            <td width="200"><b>Radar IP Address:</b></td>
+                                            <td width="150"><input type="text" id="radarip" maxlength="15"
+                                                    name="radarip" required /></td>
                                         </tr>
                                         <tr>
                                             <td width="200"><b>Device Number:</b></td>
-                                            <td width="150"><input type="text" id="device_id" length="15" name="device_id"
-                                                    required /></td>
+                                            <td width="150"><input type="text" id="device_id" length="15"
+                                                    name="device_id" required /></td>
                                         </tr>
                                         <tr>
                                             <td width="200"><b>IP Address LAN1:</b></td>
@@ -90,7 +90,8 @@
                                     </table>
 
                                     <div align="center">
-                                        <input type="submit" value="-- Apply Settings --" style="height:30px; width:180px;" />
+                                        <input type="submit" value="-- Apply Settings --"
+                                            style="height:30px; width:180px;" />
                                     </div>
 
                                     <tr>
@@ -99,7 +100,8 @@
                                         </td>
                                     </tr>
 
-                                    <button onclick="sendRebootCommand()" style="height:30px; width:180px;">-- Reboot Device --</button>
+                                    <button onclick="sendRebootCommand()" style="height:30px; width:180px;">-- Reboot
+                                        Device --</button>
                                 </div>
                             </form>
 
@@ -130,6 +132,46 @@
                                         document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
                                     }
                                 }
+
+                                let idleTime = 0;
+                                const idleLimit = 60; // seconds
+
+                                function logout() {
+                                    alert("คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา 60 วินาที");
+                                    window.location.href = '/logout';
+                                }
+
+                                async function checkLogin() {
+                                    const response = await fetch('/get-login-status');
+                                    const data = await response.json();
+                                    if (!data.loggedin) {
+                                        window.location.href = '/login';
+                                    }
+                                }
+
+                                function resetIdleTime() {
+                                    idleTime = 0;
+                                }
+
+                                checkLogin();
+
+                                setInterval(() => {
+                                    idleTime++;
+                                    if (idleTime >= idleLimit) {
+                                        if (confirm("คุณไม่ได้ใช้งานเป็นเวลา 60 วินาที คุณต้องการออกจากระบบหรือไม่?")) {
+                                            logout();
+                                        } else {
+                                            idleTime = 0; // Reset idle time
+                                        }
+                                    }
+                                }, 1000);
+
+                                window.onload = () => {
+                                    document.addEventListener('mousemove', resetIdleTime);
+                                    document.addEventListener('keypress', resetIdleTime);
+                                    document.addEventListener('click', resetIdleTime);
+                                    document.addEventListener('scroll', resetIdleTime);
+                                };
 
                                 // ฟังก์ชันสำหรับส่งการตั้งค่าใหม่
                                 document.getElementById('network-form').addEventListener('submit', async (event) => {

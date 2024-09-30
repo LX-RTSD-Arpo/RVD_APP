@@ -80,12 +80,51 @@
                             </form>
 
                             <script>
+                                let idleTime = 0;
+                                const idleLimit = 60; // seconds
+
+                                function logout() {
+                                    alert("คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา 60 วินาที");
+                                    window.location.href = '/logout';
+                                }
+
+                                async function checkLogin() {
+                                    const response = await fetch('/get-login-status');
+                                    const data = await response.json();
+                                    if (!data.loggedin) {
+                                        window.location.href = '/login';
+                                    }
+                                }
+
+                                function resetIdleTime() {
+                                    idleTime = 0;
+                                }
+
+                                checkLogin();
+
+                                setInterval(() => {
+                                    idleTime++;
+                                    if (idleTime >= idleLimit) {
+                                        if (confirm("คุณไม่ได้ใช้งานเป็นเวลา 60 วินาที คุณต้องการออกจากระบบหรือไม่?")) {
+                                            logout();
+                                        } else {
+                                            idleTime = 0; // Reset idle time
+                                        }
+                                    }
+                                }, 1000);
+
+                                window.onload = () => {
+                                    document.addEventListener('mousemove', resetIdleTime);
+                                    document.addEventListener('keypress', resetIdleTime);
+                                    document.addEventListener('click', resetIdleTime);
+                                    document.addEventListener('scroll', resetIdleTime);
+                                };
                                 document.getElementById('relay-control-form').addEventListener('submit', async (event) => {
                                     event.preventDefault(); // Prevent the page from refreshing
-                            
+
                                     const relay01Value = document.getElementById('relay01').value;
                                     const relay02Value = document.getElementById('relay02').value;
-                            
+
                                     const response = await fetch('/set-relay-control', {
                                         method: 'POST',
                                         headers: {
@@ -93,7 +132,7 @@
                                         },
                                         body: JSON.stringify({ relay01: relay01Value, relay02: relay02Value }),
                                     });
-                            
+
                                     const data = await response.json();
                                     if (response.ok) {
                                         alert('Relay settings updated successfully!');
