@@ -317,15 +317,18 @@ def get_ntp_settings():
         ntp_timesync = web_config.get('ntpsettings', 'ntp_timesync', fallback=None)
         ntp_timeout = web_config.get('ntpsettings', 'ntp_timeout', fallback=None)
 
-        ntpdate_output = subprocess.check_output(["ntpdate", "-q", ntp_server], stderr=subprocess.STDOUT)
-        ntpdate_output = ntpdate_output.decode("utf-8")
+        try:
+            ntpdate_output = subprocess.check_output(["ntpdate", "-q", ntp_server], stderr=subprocess.STDOUT)
+            ntpdate_output = ntpdate_output.decode("utf-8")
 
-        if "no server suitable" in ntpdate_output:
-            status = "NTP server unreachable"
-        elif "adjust time server" in ntpdate_output:
-            status = "NTP synchronized"
-        else:
-            status = "NTP status unknown"
+            if "no server suitable" in ntpdate_output:
+                status = "NTP server unreachable"
+            elif "adjust time server" in ntpdate_output:
+                status = "NTP synchronized"
+            else:
+                status = "NTP status unknown"
+        except subprocess.CalledProcessError as e:
+            status = f"NTP check failed: {e.output.decode('utf-8').strip()}"
 
         crontab_output = subprocess.check_output(["crontab", "-l"], stderr=subprocess.STDOUT)
         crontab_lines = crontab_output.decode("utf-8").splitlines()
