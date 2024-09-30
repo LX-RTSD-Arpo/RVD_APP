@@ -13,6 +13,7 @@ apt install cron
 apt install ntpdate
 apt-get install libmodbus-dev
 sudo apt-get install libncurses5-dev libncursesw5-dev
+python3 -m pip install flask
 
 # Set timezone & sync-time
 sudo timedatectl set-timezone Asia/Bangkok
@@ -78,7 +79,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # +---------- Minute (0 - 59)
 
 * * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute 
-0 * * * * /usr/sbin/ntpdate 10.13.80.254 > /dev/null 2>&1
+0/3  * * * * /usr/sbin/ntpdate 10.13.80.254 > /dev/null 2>&1
 
 EOF
 )
