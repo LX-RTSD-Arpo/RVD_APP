@@ -177,7 +177,8 @@ def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
         ntpdate_cmd = f"ntpdate {ntppriserver}"
         #subprocess.run(ntpdate_cmd, shell=True, check=True)
         print(ntpautosync)
-
+        ntpautosync = int(ntpautosync)
+        
         if ntpautosync == 1:
             new_crontab_content = f"""SHELL=/bin/sh
 HOME=/root
