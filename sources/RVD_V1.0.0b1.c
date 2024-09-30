@@ -89,9 +89,11 @@ const uint16_t crc_table[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x
                               0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,
                               0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
                               0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
+const char* config_file = "/root/RVD_APP/RVDWebPages_v12/webconfig/web_config.ini";
 
 char serial_port[20];
 int data_size, len, leng, msg_counter, receiver_size, rbc, sock_mcast, sock_raw, sock_serv;
+uint8_t ntp_attempt = 0;
 long long tm;
 time_t t;
 socklen_t addrlen;
@@ -139,6 +141,13 @@ typedef struct
     int radar_alive_port;
 } alive_thread_args;
 
+typedef struct {
+    char ntp_server[50];
+    int ntp_timesync;
+    int ntp_timeout;
+    int ntp_timesync_wait;
+} NTPSettings;
+
 uint16_t checksum(unsigned char *, int, const uint16_t *);
 void SetTime();
 void initBuffer(CircularBufferMatrix *);
@@ -147,6 +156,9 @@ int isEmpty(CircularBufferMatrix *);
 void enqueue(CircularBufferMatrix *, unsigned char *);
 void dequeue(CircularBufferMatrix *, unsigned char *);
 NetworkInfo *ExtractNetwork(const char *, const char *);
+void read_ntp_settings(const char*, NTPSettings*);
+int check_ntp_sync(const char*);
+time_t get_file_mod_time(const char*);
 
 int parse_config(const char *filename,
                  char *radar_ip,
@@ -405,6 +417,40 @@ void *udpsocket(void *args)
     }
 }
 
+void* ntp_sync_thread(void* arg) {
+    NTPSettings* settings = (NTPSettings*)arg;
+    
+    read_ntp_settings(config_file, &settings);  // Initial settings load
+    time_t last_mod_time = get_file_mod_time(config_file);  // Get initial modification time
+
+    while (1) {
+        time_t current_mod_time = get_file_mod_time(config_file);
+
+        if (current_mod_time > last_mod_time) {
+            printf("Settings file modified. Reloading configuration...\n");
+            read_ntp_settings(config_file, settings);  // Reload settings
+            last_mod_time = current_mod_time;  // Update last modification time
+        }
+
+        if (check_ntp_sync(settings->ntp_server)) {
+            printf("NTP sync successful\n");
+            ntp_attempt = 0;
+        } else {
+            printf("NTP sync failed\n");
+            ++ntp_attempt;
+            if (ntp_attempt >= settings->ntp_timeout) {
+                settings->ntp_timesync = settings->ntp_timesync_wait*60;
+                --ntp_attempt;
+            }
+        }
+
+        // Wait for the next sync attempt
+        sleep(settings->ntp_timesync);
+    }
+
+    return NULL;
+}
+
 void *SetTimeth(void *args)
 {
     sleep(15);
@@ -568,7 +614,11 @@ int main(int argc, char *argv[])
             sa = (struct sockaddr_in *)ifa->ifa_netmask;
     }
 
-    pthread_t udpth, aliveth, stimeth;
+    NTPSettings settings;
+    
+    read_ntp_settings(config_file, &settings);  // Initial settings load
+
+    pthread_t udpth, aliveth, stimeth, ntp_thread;
     if (pthread_create(&udpth, NULL, threadArgs.thread_function, (void *)&threadArgs) != 0)
     {
         perror("UDP receive thread creation failed");
@@ -580,6 +630,11 @@ int main(int argc, char *argv[])
     {
         perror("Alive thread creation failed");
         exit(EXIT_FAILURE);
+    }
+
+    if (pthread_create(&ntp_thread, NULL, ntp_sync_thread, (void*)&settings) != 0) {
+        perror("Error creating thread");
+        return EXIT_FAILURE;
     }
 
     printf("\nInterface: eth0");
@@ -1374,4 +1429,70 @@ NetworkInfo *ExtractNetwork(const char *interfaceName1, const char *interfaceNam
         }
     }
     return networkInfo;
+}
+
+// Thread function for NTP synchronization
+void read_ntp_settings(const char* filename, NTPSettings* settings) {
+    FILE* file = fopen(filename, "r");
+    if (file == NULL) {
+        perror("Error opening config file");
+        exit(EXIT_FAILURE);
+    }
+
+    char line[100];
+    memset(line, 0, sizeof(line));
+
+    while (fgets(line, sizeof(line), file) != NULL) {
+        if (strncmp(line, "ntp_server", 10) == 0) {
+            sscanf(line, "ntp_server = %s", settings->ntp_server);
+        } else if (strncmp(line, "ntp_timesync", 12) == 0) {
+            sscanf(line, "ntp_timesync = %d", &settings->ntp_timesync);
+            settings->ntp_timesync *= 60;
+        } else if (strncmp(line, "ntp_timeout", 11) == 0) {
+            sscanf(line, "ntp_timeout = %d", &settings->ntp_timeout);
+        } else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
+            sscanf(line, "ntp_timesync_wait = %d", &settings->ntp_timesync_wait);
+        }
+
+        memset(line, 0, sizeof(line)); // Clear line for next iteration
+    }
+
+    fclose(file);
+}
+
+int check_ntp_sync(const char* ntp_server) {
+    char command[100];
+    memset(command, 0, sizeof(command));
+
+    // Construct command with timeout for ntpdate
+    snprintf(command, sizeof(command), "ntpdate -q %s", ntp_server);
+
+    // Run the command using popen
+    FILE* fp = popen(command, "r");
+    if (fp == NULL) {
+        perror("Error executing ntpdate");
+        return 0; // Return false if there is an error
+    }
+
+    char output[200];
+    memset(output, 0, sizeof(output));
+
+    int sync_success = 0;
+    while (fgets(output, sizeof(output), fp) != NULL) {
+        if (strstr(output, "adjust time") != NULL) {
+            sync_success = 1; // Success if "adjust time" is in the output
+        }
+        memset(output, 0, sizeof(output)); // Clear output for next iteration
+    }
+
+    pclose(fp);
+    return sync_success;
+}
+
+time_t get_file_mod_time(const char* filename) {
+    struct stat file_stat;
+    if (stat(filename, &file_stat) == 0) {
+        return file_stat.st_mtime;
+    }
+    return 0; // Return 0 if the file doesn't exist or can't be accessed
 }
