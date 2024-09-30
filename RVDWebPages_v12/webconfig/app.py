@@ -174,11 +174,17 @@ def extract_version():
     
 def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
     try:
-        ntpdate_cmd = f"ntpdate {ntppriserver}"
+        web_config['ntpsettings']['ntp_server'] = ntppriserver
+        web_config['ntpsettings']['ntp_timesync'] = str(ntptimesync)  # Store as string
+        web_config['ntpsettings']['ntp_timeout'] = str(ntptimeout)    # Store as string
+        
+        # Step 3: Write the updated config back to the file
+        with open(web_config_path, 'w') as configfile:
+            web_config.write(configfile)
         #subprocess.run(ntpdate_cmd, shell=True, check=True)
         print(ntpautosync)
         ntpautosync = int(ntpautosync)
-        
+
         if ntpautosync == 1:
             new_crontab_content = f"""SHELL=/bin/sh
 HOME=/root
