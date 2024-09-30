@@ -173,46 +173,45 @@ def extract_version():
         return None
     
 def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
-    updated_crontab = []
-    job_found = False
-
     try:
         ntpdate_cmd = f"ntpdate {ntppriserver}"
-        subprocess.run(ntpdate_cmd, shell=True, check=True)
+        #subprocess.run(ntpdate_cmd, shell=True, check=True)
+        print(ntpautosync)
 
-        if ntpautosync:
+        if ntpautosync == 1:
             new_crontab_content = f"""SHELL=/bin/sh
-            HOME=/root
-            PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+HOME=/root
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-            # * * * * * your_command
-            # | | | | |
-            # | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
-            # | | | +---- Month (1 - 12)
-            # | | +------ Day of the month (1 - 31)
-            # | +-------- Hour (0 - 23)
-            # +---------- Minute (0 - 59)
+# * * * * * your_command
+# | | | | |
+# | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
+# | | | +---- Month (1 - 12)
+# | | +------ Day of the month (1 - 31)
+# | +-------- Hour (0 - 23)
+# +---------- Minute (0 - 59)
 
-            #* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
-            */{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
+#* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
             """
         else:
             new_crontab_content = f"""SHELL=/bin/sh
-            HOME=/root
-            PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+HOME=/root
+PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-            # * * * * * your_command
-            # | | | | |
-            # | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
-            # | | | +---- Month (1 - 12)
-            # | | +------ Day of the month (1 - 31)
-            # | +-------- Hour (0 - 23)
-            # +---------- Minute (0 - 59)
+# * * * * * your_command
+# | | | | |
+# | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
+# | | | +---- Month (1 - 12)
+# | | +------ Day of the month (1 - 31)
+# | +-------- Hour (0 - 23)
+# +---------- Minute (0 - 59)
 
-            #* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
-            #*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
+#* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+#*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
             """
 
+        print(new_crontab_content)
         process = subprocess.Popen(["crontab", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
         process.communicate(input=new_crontab_content.encode("utf-8"))
 

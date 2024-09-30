@@ -112,8 +112,8 @@
                                     <tr>
                                         <td><b>Automatic synchronize :</b></td>
                                         <td><select name="Autosync" id="ntpautosync" style="width:160px">
-                                                <option value="True" ~ntp_automatsync~>ON</option>
-                                                <option value="False" ~ntp_automatsync~>OFF</option>
+                                                <option value=1 ~ntp_automatsync~>ON</option>
+                                                <option value=0 ~ntp_automatsync~>OFF</option>
                                         </td>
                                     </tr>
                                     <tr>
@@ -121,12 +121,12 @@
                                     </tr>
                                     <tr>
                                         <td><b>Time synchronize (min.): </b></td>
-                                        <td><input name="ntp_timesync" type="text" id="ntptimesync" maxlength="5" required />
+                                        <td><input name="ntptimesync" type="text" id="ntptimesync" maxlength="5" required />
                                         </td>
                                     </tr>
                                     <tr>
                                         <td><b> Time out (attempts) : </b></td>
-                                        <td><input name="ntp_timeout" type="text" id="ntptimeout" maxlength="5" required />
+                                        <td><input name="ntptimeout" type="text" id="ntptimeout" maxlength="5" required />
                                         </td>
                                     </tr>
                                     <!-- <tr>
@@ -195,10 +195,10 @@
 
                                 async function SetNTPSetting() {
                                     event.preventDefault(); // ป้องกันการรีเฟรชหน้า
-                                    const ntppriserver = document.getElementById('ntp_priserver').value;
-                                    const ntpautosync = document.getElementById('ntp_autosync').value;
-                                    const ntptimesync = document.getElementById('ntp_timesync').value;
-                                    const ntptimeout = document.getElementById('ntp_timeout').value;
+                                    const ntppriserver = document.getElementById('ntppriserver').value;
+                                    const ntpautosync = document.getElementById('ntpautosync').value;
+                                    const ntptimesync = document.getElementById('ntptimesync').value;
+                                    const ntptimeout = document.getElementById('ntptimeout').value;
 
                                     const response = await fetch('/set-ntp-settings', {
                                         method: 'POST',
