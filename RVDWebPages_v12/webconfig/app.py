@@ -184,7 +184,7 @@ def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
         cron_job = f"*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
 
         if ntpautosync:
-            if cron_job not in current_crontab:
+            if 'cron_job' not in current_crontab:
                 updated_crontab = current_crontab + "\n" + cron_job + "\n"
                 subprocess.run(f'(echo "{updated_crontab}") | crontab -', shell=True, check=True)
         else:
