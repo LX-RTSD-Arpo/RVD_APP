@@ -310,7 +310,7 @@ def test_relay():
     except Exception as e:
         return jsonify({"error": str(e)}), 500
     
-@app.route('/get-ntp-settings', methods=['GET'])
+@app.route('/get-ntp-settings', methods=['POST'])
 def get_ntp_settings():
     try:
         ntp_server = web_config.get('ntpsettings', 'ntp_server', fallback=None)
