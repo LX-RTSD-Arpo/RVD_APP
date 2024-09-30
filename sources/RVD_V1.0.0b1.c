@@ -101,6 +101,7 @@ struct ifaddrs *ifa, *ifap;
 struct ifreq mac;
 struct sockaddr_in mcast, mcast_dest, receiver, *sa, server;
 struct timeval tv, net_tv, stimeout;
+pthread_t udpth, aliveth, stimeth, ntp_thread;
 
 int a, b, i, j, k, pack_byte, q, val, Crc_Byte, Crc_Time, Crc_UDP;
 unsigned char bu_buf[BUF_SIZ], checker[BUF_SIZ], Tchecker[BUF_SIZ], udp_checker[BUF_SIZ], client_buf[BUF_SIZ], crc_buf[2], crc_tbuf[2], crc_ubuf[2], dummy1[22],
@@ -626,7 +627,7 @@ int main(int argc, char *argv[])
     
     read_ntp_settings(config_file, &settings);  // Initial settings load
 
-    pthread_t udpth, aliveth, stimeth, ntp_thread;
+    // pthread_t udpth, aliveth, stimeth, ntp_thread;
     if (pthread_create(&udpth, NULL, threadArgs.thread_function, (void *)&threadArgs) != 0)
     {
         perror("UDP receive thread creation failed");
