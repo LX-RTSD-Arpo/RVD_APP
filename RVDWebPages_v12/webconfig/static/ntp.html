@@ -193,29 +193,29 @@
                                     }
                                 }
 
-                                async function SetNTPSetting() {
-                                    event.preventDefault(); // ป้องกันการรีเฟรชหน้า
-                                    const ntppriserver = document.getElementById('ntppriserver').value;
-                                    const ntpautosync = document.getElementById('ntpautosync').value;
-                                    const ntptimesync = document.getElementById('ntptimesync').value;
-                                    const ntptimeout = document.getElementById('ntptimeout').value;
+                                // async function SetNTPSetting() {
+                                //     event.preventDefault(); // ป้องกันการรีเฟรชหน้า
+                                //     const ntppriserver = document.getElementById('ntppriserver').value;
+                                //     const ntpautosync = document.getElementById('ntpautosync').value;
+                                //     const ntptimesync = document.getElementById('ntptimesync').value;
+                                //     const ntptimeout = document.getElementById('ntptimeout').value;
 
 
-                                    const response = await fetch('/set-ntp-settings', {
-                                        method: 'POST',
-                                        headers: {
-                                            'Content-Type': 'application/json'
-                                        },
-                                        body: JSON.stringify({ ntppriserver, ntpautosync, ntptimesync, ntptimeout})
-                                    });
+                                //     const response = await fetch('/set-ntp-settings', {
+                                //         method: 'POST',
+                                //         headers: {
+                                //             'Content-Type': 'application/json'
+                                //         },
+                                //         body: JSON.stringify({ ntppriserver, ntpautosync, ntptimesync, ntptimeout})
+                                //     });
 
-                                    const data = await response.json();
-                                    if (response.ok) {
-                                        alert('บันทึกการตั้งค่าเรียบร้อยแล้ว!');
-                                    } else {
-                                        alert(`เกิดข้อผิดพลาด: ${data.error}`);
-                                    }
-                                }
+                                //     const data = await response.json();
+                                //     if (response.ok) {
+                                //         alert('บันทึกการตั้งค่าเรียบร้อยแล้ว!');
+                                //     } else {
+                                //         alert(`เกิดข้อผิดพลาด: ${data.error}`);
+                                //     }
+                                // }
 
                                 fetchCurrentNTPSettings();
                             </script>
