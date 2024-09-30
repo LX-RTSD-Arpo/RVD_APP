@@ -173,23 +173,34 @@ def extract_version():
         return None
     
 def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
+    updated_crontab = []
+    job_found = False
+
     try:
         ntpdate_cmd = f"ntpdate {ntppriserver}"
         subprocess.run(ntpdate_cmd, shell=True, check=True)
 
-        # Get current crontab for the user
-        current_crontab = subprocess.check_output("crontab -l", shell=True).decode('utf-8')
-
-        # Define the cron job command for ntpdate sync
-        cron_job = f"*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
+        crontab_output = subprocess.check_output(["crontab", "-l"], stderr=subprocess.STDOUT)
+        crontab_lines = crontab_output.decode("utf-8").splitlines()
 
         if ntpautosync:
-            if 'cron_job' not in current_crontab:
-                updated_crontab = current_crontab + "\n" + cron_job + "\n"
-                subprocess.run(f'(echo "{updated_crontab}") | crontab -', shell=True, check=True)
+            cron_job = f"*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
         else:
-            updated_crontab = current_crontab.replace(cron_job, f"# {cron_job}")
-            subprocess.run(f'(echo "{updated_crontab}") | crontab -', shell=True, check=True)
+            cron_job = f"#*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
+        
+        for line in crontab_lines:
+            if 'ntpdate' in line:
+                updated_crontab.append(cron_job)  # Replace with the new job
+                job_found = True
+            else:
+                updated_crontab.append(line)
+        # Define the cron job command for ntpdate sync
+        if not job_found:
+            updated_crontab.append(cron_job)
+
+        new_crontab = "\n".join(updated_crontab)
+        process = subprocess.Popen(["crontab", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        stdout, stderr = process.communicate(input=new_crontab.encode("utf-8"))
 
         print("NTP settings updated successfully.")
     except subprocess.CalledProcessError as e:
