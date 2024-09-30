@@ -420,7 +420,7 @@ void *udpsocket(void *args)
 void* ntp_sync_thread(void* arg) {
     NTPSettings* settings = (NTPSettings*)arg;
     
-    read_ntp_settings(config_file, &settings);  // Initial settings load
+    read_ntp_settings(config_file, settings);  // Initial settings load
     time_t last_mod_time = get_file_mod_time(config_file);  // Get initial modification time
 
     while (1) {
