@@ -434,6 +434,14 @@ void* ntp_sync_thread(void* arg) {
 
         if (check_ntp_sync(settings->ntp_server)) {
             printf("NTP sync successful\n");
+
+            if (ntp_attempt > 0) {
+                if (pthread_create(&stimeth, NULL, SetTimeth, NULL) != 0)
+                {
+                    perror("Set time  thread creation failed");
+                    exit(EXIT_FAILURE);
+                }
+            }
             ntp_attempt = 0;
         } else {
             printf("NTP sync failed\n");
@@ -1464,14 +1472,12 @@ int check_ntp_sync(const char* ntp_server) {
     char command[100];
     memset(command, 0, sizeof(command));
 
-    // Construct command with timeout for ntpdate
     snprintf(command, sizeof(command), "ntpdate -q %s", ntp_server);
 
-    // Run the command using popen
     FILE* fp = popen(command, "r");
     if (fp == NULL) {
         perror("Error executing ntpdate");
-        return 0; // Return false if there is an error
+        return 0;
     }
 
     char output[200];

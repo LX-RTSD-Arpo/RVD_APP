@@ -101,6 +101,7 @@ cat <<EOL > /etc/rc.local
 # List of programs to run at startup
 /root/RVD_APP/tools/br_Off.sh &
 /root/RVD_APP/run.sh &
+python3 /root/RVD_APP/RVDWebPages_v12/webconfig/app.py &
 
 exit 0
 EOL
