@@ -75,7 +75,7 @@
                                         <td id="titlex"><span id="ntp_timesync" required>กำลังโหลด...</span></td>
                                     </tr>
                                     <tr>
-                                        <td><b> Time out (attempt) </b></td>
+                                        <td><b> Time out (min.) </b></td>
                                         <td id="titlex"><span id="ntp_timeout" required>กำลังโหลด...</span></td>
                                     </tr>
                                     <tr>
@@ -125,7 +125,7 @@
                                         </td>
                                     </tr>
                                     <tr>
-                                        <td><b> Time out (attempt) : </b></td>
+                                        <td><b> Time out (min.) : </b></td>
                                         <td><input name="ntptimeout" type="text" id="ntptimeout" maxlength="5" required />
                                         </td>
                                     </tr>
@@ -180,11 +180,11 @@
                                         const response = await fetch('/get-ntp-settings');
                                         const data = await response.json();
                                         if (response.ok) {
-                                            document.getElementById('ntp_priserver').value = data.ntp_priserver;
-                                            document.getElementById('ntp_status').value = data.ntp_status;
-                                            document.getElementById('ntp_autosync').value = data.ntp_autosync;
-                                            document.getElementById('ntp_timesync').value = data.ntp_timesync;
-                                            document.getElementById('ntp_timeout').value = data.ntp_timeout;
+                                            document.getElementById('ntp_priserver').innerText = data.ntp_priserver;
+                                            document.getElementById('ntp_status').innerText = data.ntp_status;
+                                            document.getElementById('ntp_autosync').innerText = data.ntp_autosync;
+                                            document.getElementById('ntp_timesync').innerText = data.ntp_timesync;
+                                            document.getElementById('ntp_timeout').innerText = data.ntp_timeout;
                                         } else {
                                             document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
                                         }
@@ -193,29 +193,29 @@
                                     }
                                 }
 
-                                // async function SetNTPSetting() {
-                                //     event.preventDefault(); // ป้องกันการรีเฟรชหน้า
-                                //     const ntppriserver = document.getElementById('ntppriserver').value;
-                                //     const ntpautosync = document.getElementById('ntpautosync').value;
-                                //     const ntptimesync = document.getElementById('ntptimesync').value;
-                                //     const ntptimeout = document.getElementById('ntptimeout').value;
+                                async function SetNTPSetting() {
+                                    event.preventDefault(); // ป้องกันการรีเฟรชหน้า
+                                    const ntppriserver = document.getElementById('ntppriserver').value;
+                                    const ntpautosync = document.getElementById('ntpautosync').value;
+                                    const ntptimesync = document.getElementById('ntptimesync').value;
+                                    const ntptimeout = document.getElementById('ntptimeout').value;
 
 
-                                //     const response = await fetch('/set-ntp-settings', {
-                                //         method: 'POST',
-                                //         headers: {
-                                //             'Content-Type': 'application/json'
-                                //         },
-                                //         body: JSON.stringify({ ntppriserver, ntpautosync, ntptimesync, ntptimeout})
-                                //     });
+                                    const response = await fetch('/set-ntp-settings', {
+                                        method: 'POST',
+                                        headers: {
+                                            'Content-Type': 'application/json'
+                                        },
+                                        body: JSON.stringify({ ntppriserver, ntpautosync, ntptimesync, ntptimeout})
+                                    });
 
-                                //     const data = await response.json();
-                                //     if (response.ok) {
-                                //         alert('บันทึกการตั้งค่าเรียบร้อยแล้ว!');
-                                //     } else {
-                                //         alert(`เกิดข้อผิดพลาด: ${data.error}`);
-                                //     }
-                                // }
+                                    const data = await response.json();
+                                    if (response.ok) {
+                                        alert('บันทึกการตั้งค่าเรียบร้อยแล้ว!');
+                                    } else {
+                                        alert(`เกิดข้อผิดพลาด: ${data.error}`);
+                                    }
+                                }
 
                                 fetchCurrentNTPSettings();
                             </script>
