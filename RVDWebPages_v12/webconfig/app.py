@@ -180,27 +180,41 @@ def write_ntp_settings(ntppriserver, ntpautosync, ntptimesync, ntptimeout):
         ntpdate_cmd = f"ntpdate {ntppriserver}"
         subprocess.run(ntpdate_cmd, shell=True, check=True)
 
-        crontab_output = subprocess.check_output(["crontab", "-l"], stderr=subprocess.STDOUT)
-        crontab_lines = crontab_output.decode("utf-8").splitlines()
-
         if ntpautosync:
-            cron_job = f"*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
-        else:
-            cron_job = f"#*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1"
-        
-        for line in crontab_lines:
-            if 'ntpdate' in line:
-                updated_crontab.append(cron_job)  # Replace with the new job
-                job_found = True
-            else:
-                updated_crontab.append(line)
-        # Define the cron job command for ntpdate sync
-        if not job_found:
-            updated_crontab.append(cron_job)
+            new_crontab_content = f"""SHELL=/bin/sh
+            HOME=/root
+            PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 
-        new_crontab = "\n".join(updated_crontab)
+            # * * * * * your_command
+            # | | | | |
+            # | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
+            # | | | +---- Month (1 - 12)
+            # | | +------ Day of the month (1 - 31)
+            # | +-------- Hour (0 - 23)
+            # +---------- Minute (0 - 59)
+
+            #* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+            */{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
+            """
+        else:
+            new_crontab_content = f"""SHELL=/bin/sh
+            HOME=/root
+            PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
+
+            # * * * * * your_command
+            # | | | | |
+            # | | | | +-- Day of the week (0 - 7) (Sunday is 0 or 7)
+            # | | | +---- Month (1 - 12)
+            # | | +------ Day of the month (1 - 31)
+            # | +-------- Hour (0 - 23)
+            # +---------- Minute (0 - 59)
+
+            #* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+            #*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
+            """
+
         process = subprocess.Popen(["crontab", "-"], stdin=subprocess.PIPE, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
-        stdout, stderr = process.communicate(input=new_crontab.encode("utf-8"))
+        process.communicate(input=new_crontab_content.encode("utf-8"))
 
         print("NTP settings updated successfully.")
     except subprocess.CalledProcessError as e:
