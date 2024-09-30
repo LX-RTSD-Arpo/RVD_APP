@@ -418,6 +418,17 @@ void *udpsocket(void *args)
     }
 }
 
+void *SetTimeth(void *args)
+{
+    sleep(15);
+    SetTime();
+    pthread_exit(NULL);
+}
+
+void read_ntp_settings(const char*, NTPSettings*);
+int check_ntp_sync(const char*);
+time_t get_file_mod_time(const char*);
+
 void* ntp_sync_thread(void* arg) {
     NTPSettings* settings = (NTPSettings*)arg;
     
@@ -459,17 +470,6 @@ void* ntp_sync_thread(void* arg) {
 
     return NULL;
 }
-
-void *SetTimeth(void *args)
-{
-    sleep(15);
-    SetTime();
-    pthread_exit(NULL);
-}
-
-void read_ntp_settings(const char*, NTPSettings*);
-int check_ntp_sync(const char*);
-time_t get_file_mod_time(const char*);
 
 int main(int argc, char *argv[])
 {
