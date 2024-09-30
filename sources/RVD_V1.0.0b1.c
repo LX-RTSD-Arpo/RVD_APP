@@ -157,9 +157,9 @@ int isEmpty(CircularBufferMatrix *);
 void enqueue(CircularBufferMatrix *, unsigned char *);
 void dequeue(CircularBufferMatrix *, unsigned char *);
 NetworkInfo *ExtractNetwork(const char *, const char *);
-void read_ntp_settings(const char*, NTPSettings*);
-int check_ntp_sync(const char*);
-time_t get_file_mod_time(const char*);
+// void read_ntp_settings(const char*, NTPSettings*);
+// int check_ntp_sync(const char*);
+// time_t get_file_mod_time(const char*);
 
 int parse_config(const char *filename,
                  char *radar_ip,
@@ -466,6 +466,10 @@ void *SetTimeth(void *args)
     SetTime();
     pthread_exit(NULL);
 }
+
+void read_ntp_settings(const char*, NTPSettings*);
+int check_ntp_sync(const char*);
+time_t get_file_mod_time(const char*);
 
 int main(int argc, char *argv[])
 {
