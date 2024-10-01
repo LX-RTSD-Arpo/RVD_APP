@@ -442,6 +442,7 @@ void* ntp_sync_thread(void* arg) {
         if (current_mod_time > last_mod_time) {
             printf("\nSettings file modified. Reloading configuration...\n");
             read_ntp_settings(config_file, settings);  // Reload settings
+            settings->ntp_timesync *= 60;
             last_mod_time = current_mod_time;  // Update last modification time
         }
 
