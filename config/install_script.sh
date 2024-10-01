@@ -14,6 +14,7 @@ apt install ntpdate
 apt-get install libmodbus-dev
 sudo apt-get install libncurses5-dev libncursesw5-dev
 python3 -m pip install flask
+python3 -m pip install pytz
 
 # Set timezone & sync-time
 sudo timedatectl set-timezone Asia/Bangkok
