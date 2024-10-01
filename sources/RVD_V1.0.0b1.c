@@ -465,7 +465,7 @@ void* ntp_sync_thread(void* arg) {
             }
         }
 
-        print("Timesync = %d", settings->ntp_timesync)
+        printf("Timesync = %d", settings->ntp_timesync);
         sleep(settings->ntp_timesync);
     }
 
