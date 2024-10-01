@@ -146,7 +146,7 @@ typedef struct {
     char ntp_server[50];
     int ntp_timesync;
     int ntp_timeout;
-    int ntp_timesync_wait;
+    //int ntp_timesync_wait;
 } NTPSettings;
 
 uint16_t checksum(unsigned char *, int, const uint16_t *);
@@ -431,13 +431,14 @@ time_t get_file_mod_time(const char*);
 
 void* ntp_sync_thread(void* arg) {
     NTPSettings* settings = (NTPSettings*)arg;
-    
+
     read_ntp_settings(config_file, settings);  // Initial settings load
     time_t last_mod_time = get_file_mod_time(config_file);  // Get initial modification time
     settings->ntp_timesync *= 60;
     
     while (1) {
         time_t current_mod_time = get_file_mod_time(config_file);
+        int timewait = 0;
 
         if (current_mod_time > last_mod_time) {
             printf("\nSettings file modified. Reloading configuration...\n");
@@ -461,10 +462,10 @@ void* ntp_sync_thread(void* arg) {
             printf("\nNTP sync failed\n");
             ++ntp_attempt;
             if (ntp_attempt >= settings->ntp_timeout) {
-                printf("settings->ntp_timesync_wait = %d", settings->ntp_timesync_wait);
                 printf("\nNTP sync timeout\n");
-                settings->ntp_timesync = settings->ntp_timesync_wait*60;
+                timewait = settings->ntp_timesync *3;
                 --ntp_attempt;
+                settings->ntp_timesync = timewait;
             }
         }
 
@@ -1466,9 +1467,9 @@ void read_ntp_settings(const char* filename, NTPSettings* settings) {
             sscanf(line, "ntp_timesync = %d", &settings->ntp_timesync);
         } else if (strncmp(line, "ntp_timeout", 11) == 0) {
             sscanf(line, "ntp_timeout = %d", &settings->ntp_timeout);
-        } else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
-            sscanf(line, "ntp_timesync_wait = %d", &settings->ntp_timesync_wait);
-        }
+        // } else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
+        //     sscanf(line, "ntp_timesync_wait = %d", &settings->ntp_timesync_wait);
+        // }
 
         memset(line, 0, sizeof(line)); // Clear line for next iteration
     }
