@@ -1467,7 +1467,7 @@ void read_ntp_settings(const char* filename, NTPSettings* settings) {
             sscanf(line, "ntp_timesync = %d", &settings->ntp_timesync);
         } else if (strncmp(line, "ntp_timeout", 11) == 0) {
             sscanf(line, "ntp_timeout = %d", &settings->ntp_timeout);
-        // } else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
+        } //else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
         //     sscanf(line, "ntp_timesync_wait = %d", &settings->ntp_timesync_wait);
         // }
 
