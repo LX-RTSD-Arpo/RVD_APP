@@ -466,7 +466,7 @@ void* ntp_sync_thread(void* arg) {
         if (ntp_attempt >= settings->ntp_timeout) {
             printf("\nNTP sync timeout\n");
             timewait = settings->ntp_timesync *3;
-            --ntp_attempt
+            --ntp_attempt;
             printf("Timesync = %d\n", timewait);
             sleep(timewait);
         }
