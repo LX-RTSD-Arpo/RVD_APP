@@ -461,16 +461,19 @@ void* ntp_sync_thread(void* arg) {
         } else {
             printf("\nNTP sync failed\n");
             ++ntp_attempt;
-            if (ntp_attempt >= settings->ntp_timeout) {
-                printf("\nNTP sync timeout\n");
-                timewait = settings->ntp_timesync *3;
-                --ntp_attempt;
-                settings->ntp_timesync = timewait;
-            }
         }
 
-        printf("Timesync = %d\n", settings->ntp_timesync);
-        sleep(settings->ntp_timesync);
+        if (ntp_attempt >= settings->ntp_timeout) {
+            printf("\nNTP sync timeout\n");
+            timewait = settings->ntp_timesync *3;
+            --ntp_attempt
+            printf("Timesync = %d\n", timewait);
+            sleep(timewait);
+        }
+        else {
+            printf("Timesync = %d\n", settings->ntp_timesync);
+            sleep(settings->ntp_timesync);
+        }
     }
 
     return NULL;
