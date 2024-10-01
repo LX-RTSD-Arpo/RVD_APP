@@ -10,6 +10,7 @@ import pytz
 app = Flask(__name__)
 
 app.secret_key = os.urandom(24)
+app.permanent_session_lifetime = timedelta(minutes=5)
 
 web_config_path = os.path.join(os.path.dirname(os.path.abspath(__file__)), 'web_config.ini')
 
@@ -410,14 +411,15 @@ def set_ntp_settings():
     except Exception as e:
         print(f"Error setting network settings: {e}")
         return jsonify(error=str(e)), 500
-    
-@app.route('/login', methods=['GET', 'POST'])
+
+@app.route('/login', methods=['POST'])
 def login():
     if request.method == 'POST':
         username = request.form['username']
         password = request.form['password']
         if username in users and check_password_hash(users[username], password):
             session['loggedin'] = True
+            session.permanent = True  # Make the session permanent
             return redirect(url_for('index'))
         else:
             return "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", 401
@@ -457,18 +459,18 @@ def check_idle_timeout():
     if 'loggedin' in session:
         last_activity = session.get('last_activity')
 
-        # ตั้งค่า timezone
-        tz = pytz.timezone('Asia/Bangkok')  # เปลี่ยนเป็น timezone ที่คุณต้องการ
+        # Set timezone (Bangkok in this case)
+        tz = pytz.timezone('Asia/Bangkok')
         now = datetime.now(tz)
 
         if last_activity:
-            last_activity = last_activity.astimezone(tz)  # แปลงเป็น timezone เดียวกัน
+            last_activity = datetime.fromisoformat(last_activity).astimezone(tz)  # Convert to timezone
 
-            if now - last_activity > timedelta(minutes=1):  # 1 นาที
+            if now - last_activity > timedelta(minutes=5):  # 5-minute timeout
                 session.pop('loggedin', None)
                 return redirect(url_for('login'))
 
-        session['last_activity'] = now  # อัปเดตเวลาใช้งานล่าสุด
+        session['last_activity'] = now.isoformat()  # Store in ISO format
 
 if __name__ == '__main__':
     port = web_config.getint('settings', 'port', fallback=5000)
