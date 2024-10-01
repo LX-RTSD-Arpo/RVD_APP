@@ -434,18 +434,19 @@ void* ntp_sync_thread(void* arg) {
     
     read_ntp_settings(config_file, settings);  // Initial settings load
     time_t last_mod_time = get_file_mod_time(config_file);  // Get initial modification time
-
+    settings->ntp_timesync *= 60;
+    
     while (1) {
         time_t current_mod_time = get_file_mod_time(config_file);
 
         if (current_mod_time > last_mod_time) {
-            printf("Settings file modified. Reloading configuration...\n");
+            printf("\nSettings file modified. Reloading configuration...\n");
             read_ntp_settings(config_file, settings);  // Reload settings
             last_mod_time = current_mod_time;  // Update last modification time
         }
 
         if (check_ntp_sync(settings->ntp_server)) {
-            printf("NTP sync successful\n");
+            printf("\nNTP sync successful\n");
 
             if (ntp_attempt > 0) {
                 if (pthread_create(&stimeth, NULL, SetTimeth, NULL) != 0)
@@ -456,16 +457,16 @@ void* ntp_sync_thread(void* arg) {
             }
             ntp_attempt = 0;
         } else {
-            printf("NTP sync failed\n");
+            printf("\nNTP sync failed\n");
             ++ntp_attempt;
             if (ntp_attempt >= settings->ntp_timeout) {
-                printf("NTP sync timeout\n");
+                printf("\nNTP sync timeout\n");
                 settings->ntp_timesync = settings->ntp_timesync_wait*60;
                 --ntp_attempt;
             }
         }
 
-        printf("Timesync = %d", settings->ntp_timesync);
+        printf("Timesync = %d\n", settings->ntp_timesync);
         sleep(settings->ntp_timesync);
     }
 
@@ -1461,7 +1462,6 @@ void read_ntp_settings(const char* filename, NTPSettings* settings) {
             sscanf(line, "ntp_server = %s", settings->ntp_server);
         } else if (strncmp(line, "ntp_timesync", 12) == 0) {
             sscanf(line, "ntp_timesync = %d", &settings->ntp_timesync);
-            settings->ntp_timesync *= 60;
         } else if (strncmp(line, "ntp_timeout", 11) == 0) {
             sscanf(line, "ntp_timeout = %d", &settings->ntp_timeout);
         } else if (strncmp(line, "ntp_timesync_wait", 17) == 0) {
