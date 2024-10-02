@@ -51,7 +51,7 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
     let confirmationShown = false; // Flag to track if a confirmation is shown
     const idleMinutes = idleLimit / 60; // Convert idleLimit to minutes
 
-    function logout() {
+    async function logout() {
         alert(`คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที`);
         window.location.href = '/logout';
     }
@@ -73,17 +73,23 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
         confirmationShown = false; // Reset confirmation flag when user interacts
     }
 
-    checkLogin();
+    // checkLogin();
 
     setInterval(() => {
         idleTime++;
         if (idleTime >= idleLimit && !confirmationShown) {
             confirmationShown = true; // Set flag to indicate the confirmation is shown
-            if (confirm(`คุณไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที คุณต้องการออกจากระบบหรือไม่?`)) {
+            const confirmLogout = confirm(`คุณไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที คุณต้องการออกจากระบบหรือไม่?`);
+            if (confirmLogout) {
                 logout();
             } else {
                 idleTime = 0; // Reset idle time if user cancels
                 confirmationShown = false; // Allow the confirmation to be shown again in the future
+                checkLogin().then(() => {
+                    console.log('Login status checked after cancellation');
+                }).catch(error => {
+                    console.error('Error checking login status after cancellation:', error);
+                });
             }
         }
     }, 1000);
@@ -95,6 +101,10 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
         document.addEventListener('scroll', resetIdleTime);
     };
 }
+
+// Call the function to activate the idle logout handler
+initializeIdleLogoutHandler(300); // idleLimit set to 300 seconds (5 minutes)
+
 
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
