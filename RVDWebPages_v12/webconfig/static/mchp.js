@@ -46,6 +46,56 @@ async function fetchRVDData() {
 	}
 }
 
+function initializeIdleLogoutHandler(idleLimit = 300) {
+    let idleTime = 0;
+    let confirmationShown = false; // Flag to track if a confirmation is shown
+    const idleMinutes = idleLimit / 60; // Convert idleLimit to minutes
+
+    function logout() {
+        alert(`คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที`);
+        window.location.href = '/logout';
+    }
+
+    async function checkLogin() {
+        try {
+            const response = await fetch('/get-login-status');
+            const data = await response.json();
+            if (!data.loggedin) {
+                window.location.href = '/login';
+            }
+        } catch (error) {
+            console.error('Error checking login status:', error);
+        }
+    }
+
+    function resetIdleTime() {
+        idleTime = 0;
+        confirmationShown = false; // Reset confirmation flag when user interacts
+    }
+
+    checkLogin();
+
+    setInterval(() => {
+        idleTime++;
+        if (idleTime >= idleLimit && !confirmationShown) {
+            confirmationShown = true; // Set flag to indicate the confirmation is shown
+            if (confirm(`คุณไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที คุณต้องการออกจากระบบหรือไม่?`)) {
+                logout();
+            } else {
+                idleTime = 0; // Reset idle time if user cancels
+                confirmationShown = false; // Allow the confirmation to be shown again in the future
+            }
+        }
+    }, 1000);
+
+    window.onload = () => {
+        document.addEventListener('mousemove', resetIdleTime);
+        document.addEventListener('keypress', resetIdleTime);
+        document.addEventListener('click', resetIdleTime);
+        document.addEventListener('scroll', resetIdleTime);
+    };
+}
+
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**

@@ -217,45 +217,7 @@
                                     }
                                 }
 
-                                let idleTime = 0;
-                                const idleLimit = 300; // seconds
-
-                                function logout() {
-                                    alert("คุณถูกล็อกเอาต์เนื่องจากไม่ได้ใช้งานเป็นเวลา 5 นาที");
-                                    window.location.href = '/logout';
-                                }
-
-                                async function checkLogin() {
-                                    const response = await fetch('/get-login-status');
-                                    const data = await response.json();
-                                    if (!data.loggedin) {
-                                        window.location.href = '/login';
-                                    }
-                                }
-
-                                function resetIdleTime() {
-                                    idleTime = 0;
-                                }
-
-                                checkLogin();
-
-                                setInterval(() => {
-                                    idleTime++;
-                                    if (idleTime >= idleLimit) {
-                                        if (confirm("คุณไม่ได้ใช้งานเป็นเวลา 5 นาที คุณต้องการออกจากระบบหรือไม่?")) {
-                                            logout();
-                                        } else {
-                                            idleTime = 0; // Reset idle time
-                                        }
-                                    }
-                                }, 1000);
-
-                                window.onload = () => {
-                                    document.addEventListener('mousemove', resetIdleTime);
-                                    document.addEventListener('keypress', resetIdleTime);
-                                    document.addEventListener('click', resetIdleTime);
-                                    document.addEventListener('scroll', resetIdleTime);
-                                };
+                                initializeIdleLogoutHandler(300);
                                 
                                 fetchCurrentNTPSettings();
                             </script>
