@@ -80,6 +80,7 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
         if (idleTime >= idleLimit && !confirmationShown) {
             confirmationShown = true; // Set flag to indicate the confirmation is shown
             const confirmLogout = confirm(`คุณไม่ได้ใช้งานเป็นเวลา ${idleMinutes} นาที คุณต้องการออกจากระบบหรือไม่?`);
+			
             if (confirmLogout) {
                 logout();
             } else {
