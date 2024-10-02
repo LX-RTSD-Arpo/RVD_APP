@@ -1,5 +1,5 @@
 import os
-from flask import Flask, jsonify, request, send_from_directory, render_template, redirect, url_for, session
+from flask import Flask, jsonify, request, send_from_directory, render_template, redirect, url_for, session, make_response
 from werkzeug.security import generate_password_hash, check_password_hash
 import configparser
 import subprocess
@@ -453,23 +453,21 @@ def static_files(path):
 def get_login_status():
     return jsonify(loggedin='loggedin' in session)
 
-# @app.before_request
-# def check_idle_timeout():
-#     if 'loggedin' in session:
-#         last_activity = session.get('last_activity')
+@app.route('/dashboard')
+def dashboard():
+    if 'loggedin' not in session:
+        return redirect('/login')
 
-#         # ตั้งค่า timezone
-#         tz = pytz.timezone('Asia/Bangkok')  # เปลี่ยนเป็น timezone ที่คุณต้องการ
-#         now = datetime.now(tz)
+    response = make_response(render_template('dashboard.html'))
+    response.headers['Cache-Control'] = 'no-store, no-cache, must-revalidate, max-age=0'
+    response.headers['Pragma'] = 'no-cache'
+    response.headers['Expires'] = '0'
+    return response
 
-#         if last_activity:
-#             last_activity = last_activity.astimezone(tz)  # แปลงเป็น timezone เดียวกัน
-
-#             if now - last_activity > timedelta(minutes=1):  # 1 นาที
-#                 session.pop('loggedin', None)
-#                 return redirect(url_for('login'))
-
-#         session['last_activity'] = now  # อัปเดตเวลาใช้งานล่าสุด
+@app.before_request
+def require_login():
+    if 'loggedin' not in session and request.endpoint != 'login' and request.endpoint != 'static':
+        return redirect('/login')
 
 if __name__ == '__main__':
     port = web_config.getint('settings', 'port', fallback=5000)

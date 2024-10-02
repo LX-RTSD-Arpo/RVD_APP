@@ -104,16 +104,31 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
 }
 
 function confirmLogout() {
-	const confirmation = confirm('คุณแน่ใจหรือไม่ว่าจะออกจากระบบ?');
-	if (confirmation) {
-		fetch('/logout', {
-			method: 'POST',
-		}).catch(error => {
-			console.error("Error:", error);
-			alert("Error sending logout command.");
-		});
-	} // Return true if confirmed, false if canceled
+	if (confirm('คุณแน่ใจหรือไม่ว่าจะออกจากระบบ?')) {
+		clearCacheAndRedirectToLogout();
+		return true;  // Proceed with logout
+	}
+	return false;  // Cancel logout
 }
+
+function clearCacheAndRedirectToLogout() {
+	// Clear browser cache to prevent accessing pages after logout
+	if (performance.getEntriesByType("navigation")[0].type === "back_forward") {
+		// If accessed via back/forward, force a page reload
+		window.location.reload();
+	} else {
+		// Perform logout and redirect to login page or dashboard
+		window.location.href = '/logout';
+	}
+}
+
+// Prevent accessing pages like the dashboard after logout
+window.addEventListener('pageshow', function (event) {
+	if (event.persisted || window.performance.getEntriesByType("navigation")[0].type === "back_forward") {
+		window.location.href = '/login';  // Redirect to login if coming back after logout
+	}
+});
+
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**
