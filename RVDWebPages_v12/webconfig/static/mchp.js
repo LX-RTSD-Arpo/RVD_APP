@@ -103,7 +103,10 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
     };
 }
 
-
+function confirmLogout() {
+	const confirmation = confirm('คุณแน่ใจหรือไม่ว่าจะออกจากระบบ?');
+	return confirmation; // Return true if confirmed, false if canceled
+}
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 
 /**
