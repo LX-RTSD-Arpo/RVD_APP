@@ -105,7 +105,14 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
 
 function confirmLogout() {
 	const confirmation = confirm('คุณแน่ใจหรือไม่ว่าจะออกจากระบบ?');
-	return confirmation; // Return true if confirmed, false if canceled
+	if (confirmation) {
+		fetch('/logout', {
+			method: 'POST',
+		}).catch(error => {
+			console.error("Error:", error);
+			alert("Error sending logout command.");
+		});
+	} // Return true if confirmed, false if canceled
 }
 /////////////////////////////////////////////Arpo Above//////////////////////////////////////////////////
 

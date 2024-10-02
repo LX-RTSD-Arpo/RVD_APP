@@ -424,7 +424,7 @@ def login():
             return "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", 401
     return render_template('login.html')
 
-@app.route('/logout')
+@app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('loggedin', None)  # ลบ session
     return redirect(url_for('login'))  # Redirect ไปที่หน้า login
