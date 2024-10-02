@@ -453,23 +453,23 @@ def static_files(path):
 def get_login_status():
     return jsonify(loggedin='loggedin' in session)
 
-@app.before_request
-def check_idle_timeout():
-    if 'loggedin' in session:
-        last_activity = session.get('last_activity')
+# @app.before_request
+# def check_idle_timeout():
+#     if 'loggedin' in session:
+#         last_activity = session.get('last_activity')
 
-        # ตั้งค่า timezone
-        tz = pytz.timezone('Asia/Bangkok')  # เปลี่ยนเป็น timezone ที่คุณต้องการ
-        now = datetime.now(tz)
+#         # ตั้งค่า timezone
+#         tz = pytz.timezone('Asia/Bangkok')  # เปลี่ยนเป็น timezone ที่คุณต้องการ
+#         now = datetime.now(tz)
 
-        if last_activity:
-            last_activity = last_activity.astimezone(tz)  # แปลงเป็น timezone เดียวกัน
+#         if last_activity:
+#             last_activity = last_activity.astimezone(tz)  # แปลงเป็น timezone เดียวกัน
 
-            if now - last_activity > timedelta(minutes=1):  # 1 นาที
-                session.pop('loggedin', None)
-                return redirect(url_for('login'))
+#             if now - last_activity > timedelta(minutes=1):  # 1 นาที
+#                 session.pop('loggedin', None)
+#                 return redirect(url_for('login'))
 
-        session['last_activity'] = now  # อัปเดตเวลาใช้งานล่าสุด
+#         session['last_activity'] = now  # อัปเดตเวลาใช้งานล่าสุด
 
 if __name__ == '__main__':
     port = web_config.getint('settings', 'port', fallback=5000)
