@@ -126,9 +126,9 @@
                                             document.getElementById('primary_dns').value = data.primary_dns;
                                             document.getElementById('secondary_dns').value = data.secondary_dns;
                                             document.getElementById('firmware_version').value = data.firmware_version;
-                                        } else {
-                                            document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
-                                        }
+                                        } //else {
+                                        //     document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาด: ${data.error}</p>`;
+                                        // }
                                     } catch (error) {
                                         document.getElementById('current-settings').innerHTML = `<p>เกิดข้อผิดพลาดในการเชื่อมต่อ: ${error.message}</p>`;
                                     }
