@@ -24,14 +24,14 @@ sudo timedatectl set-timezone Asia/Bangkok
 SOURCE_DIR="/root/RVD_APP/config"
 DEST_DIR="/etc/network/interfaces.d"
 
-# if [[ ! -f "$SOURCE_DIR/custom_eth0" || ! -f "$SOURCE_DIR/custom_eth1" || ! -f "$SOURCE_DIR/custom_br0" ]]; then
-#   echo "Custom configuration files not found in $SOURCE_DIR"
-#   exit 1
-# fi
+if [[ ! -f "$SOURCE_DIR/custom_eth0" || ! -f "$SOURCE_DIR/custom_eth1" || ! -f "$SOURCE_DIR/custom_br0" ]]; then
+  echo "Custom configuration files not found in $SOURCE_DIR"
+  exit 1
+fi
 
-# sudo cp "$SOURCE_DIR/custom_eth0" "$DEST_DIR/eth0"
-# sudo cp "$SOURCE_DIR/custom_eth1" "$DEST_DIR/eth1"
-# sudo cp "$SOURCE_DIR/custom_br0" "$DEST_DIR/br0"
+sudo cp "$SOURCE_DIR/custom_eth0" "$DEST_DIR/eth0"
+sudo cp "$SOURCE_DIR/custom_eth1" "$DEST_DIR/eth1"
+sudo cp "$SOURCE_DIR/custom_br0" "$DEST_DIR/br0"
 
 FILE="/etc/sysctl.conf"
 
