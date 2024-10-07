@@ -83,12 +83,8 @@ void loop() {
   inputRegisters[1] = analogRead(inputRegistersPins[1]);
 
   modbus.poll();
-
-  if (precoils[0] != coils[0])
-    digitalWrite(coilsPins[2], coils[0]);
-
-  if (precoils[1] != coils[1])
-    digitalWrite(coilsPins[3], coils[1]);
+  digitalWrite(coilsPins[2], coils[0]);
+  digitalWrite(coilsPins[3], coils[1]);
 
   // Serial.println(inputRegisters[0], DEC);
 
