@@ -34,6 +34,7 @@
 #define MAX_SERIAL_PORT_ATTEMPTS 5
 #define REGIS_START 0
 #define REGIS_COUNT 2
+#define COILS_REGIS 2
 #define POLL_INTERVAL 2
 
 #define CRC16_INIT 0xFFFF
@@ -111,7 +112,7 @@ int mc, fd, idx;
 modbus_t *ctx;
 uint16_t holding_registers[REGIS_COUNT] = {0};
 uint16_t input_registers[REGIS_COUNT] = {0};
-uint8_t coils[REGIS_COUNT] = {0};
+uint8_t coils[COILS_REGIS] = {0};
 
 typedef struct
 {
@@ -491,6 +492,7 @@ int main(int argc, char *argv[])
     uint8_t response_receiver = 0;
     uint8_t reset_output1_enable = 1;
     uint8_t reset_output2_enable = 1;
+    uint8_t toggle_enable = 1;
     int server_port = 50002;
 
     threadArgs.radar_port = 55555;
@@ -1103,6 +1105,10 @@ int main(int argc, char *argv[])
                                     else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
                                     {
                                         reset_output2_enable = atoi(value);
+                                    } 
+                                    else if (strcmp(key, "TOGGLE_ENABLE") == 0)
+                                    {
+                                        toggle_enable = atoi(value);
                                     }
                                 }
                             }
@@ -1110,7 +1116,8 @@ int main(int argc, char *argv[])
                             fclose(file);
                             coils[0] = reset_output1_enable;
                             coils[1] = reset_output2_enable;
-                            int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
+                            coils[2] = toggle_enable;
+                            int rcw = modbus_write_bits(ctx, REGIS_START, COILS_REGIS, coils);
                             if (rcw == -1)
                             {
                                 fprintf(stderr, "\n[-]MODBUS Write error: %s\n", modbus_strerror(errno));

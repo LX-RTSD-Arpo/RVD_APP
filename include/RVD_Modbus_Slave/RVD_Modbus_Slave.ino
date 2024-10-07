@@ -42,7 +42,8 @@ const uint8_t dePin = 13;
 //SoftwareSerial mySerial(rxPin, txPin);
 ModbusRTUSlave modbus(Serial, dePin); // serial port, driver enable pin for rs-485 (optional)
 
-bool coils[2];
+bool coils[3];
+bool precoils[2];
 bool discreteInputs[2];
 uint16_t holdingRegisters[2];
 uint16_t inputRegisters[2];
@@ -57,7 +58,7 @@ void setup() {
   pinMode(inputRegistersPins[0], INPUT);
   pinMode(inputRegistersPins[1], INPUT);
 
-  modbus.configureCoils(coils, 2);                       // bool array of coil values, number of coils
+  modbus.configureCoils(coils, 3);                       // bool array of coil values, number of coils
   modbus.configureDiscreteInputs(discreteInputs, 2);     // bool array of discrete input values, number of discrete inputs
   modbus.configureHoldingRegisters(holdingRegisters, 2); // unsigned 16 bit integer array of holding register values, number of holding registers
   modbus.configureInputRegisters(inputRegisters, 2);     // unsigned 16 bit integer array of input register values, number of input registers
@@ -67,8 +68,10 @@ void setup() {
 }
 
 void loop() {
-  coils[0] = false;
-  coils[1] = false;
+  precoils[0] = coils[0];
+  precoils[1] = coils[1];
+  // coils[0] = false;
+  // coils[1] = false;
   //discreteInputs[0] = 1;//!digitalRead(discreteInputsPins[0]);
   //discreteInputs[1] = 0;//!digitalRead(discreteInputsPins[1]);
   //volt[0] = analogRead(holdingRegistersPins[0]);
@@ -78,10 +81,19 @@ void loop() {
 
   inputRegisters[0] = analogRead(inputRegistersPins[0]);
   inputRegisters[1] = analogRead(inputRegistersPins[1]);
+
   modbus.poll();
 
-  digitalWrite(coilsPins[2], coils[0]);
-  digitalWrite(coilsPins[3], coils[1]);
-  Serial.println(inputRegisters[0], DEC);
-  delay(holdingRegisters[0]);
+  if ((precoils[0] != coils[0]) || (precoils[1] != coils[1])) {
+    digitalWrite(coilsPins[2], coils[0]);
+    digitalWrite(coilsPins[3], coils[1]);
+  }
+
+  // Serial.println(inputRegisters[0], DEC);
+
+  if (coils[2] == 1) {
+    delay(holdingRegisters[0]);
+    coils[0] = false;
+    coils[1] = false;
+  }
 }

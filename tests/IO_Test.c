@@ -9,10 +9,10 @@
 #define SLAVEID 1
 #define MAX_SERIAL_PORT_ATTEMPTS 5
 #define REGIS_START 0
-#define REGIS_COUNT 2
+#define REGIS_COUNT 3
 #define POLL_INTERVAL 2
 
-int parse_config(const char *filename, uint8_t *reset_output1_enable, uint8_t *reset_output2_enable)
+int parse_config(const char *filename, uint8_t *reset_output1_enable, uint8_t *reset_output2_enable, uint8_t *toggle_enable)
 {
     FILE *file = fopen(filename, "r");
     if (!file)
@@ -33,6 +33,8 @@ int parse_config(const char *filename, uint8_t *reset_output1_enable, uint8_t *r
                 *reset_output1_enable = atoi(value);
             else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
                 *reset_output2_enable = atoi(value);
+            else if (strcmp(key, "TOGGLE_ENABLE") == 0)
+                *toggle_enable = atoi(value);
         }
     }
 
@@ -61,8 +63,9 @@ int try_open_serial_port(const char *port_format, int attempt, char *serial_port
 int main() {
     uint8_t reset_output1_enable = 1;
     uint8_t reset_output2_enable = 1;
+    uint8_t toggle_enable = 1;
 
-    if (parse_config("/root/RVD_APP/config.txt", &reset_output1_enable, &reset_output2_enable) != 0)
+    if (parse_config("/root/RVD_APP/config.txt", &reset_output1_enable, &reset_output2_enable, &toggle_enable) != 0)
     {
         fprintf(stderr, "Failed to parse configuration file\n");
         return -1;
@@ -72,8 +75,8 @@ int main() {
     int fd = -1;
     char serial_port[20];
     modbus_t *ctx = NULL;
-    uint16_t holding_registers[REGIS_COUNT] = {0};  // Array to store received data
-    uint16_t input_registers[REGIS_COUNT] = {0};
+    // uint16_t holding_registers[REGIS_COUNT] = {0};  // Array to store received data
+    // uint16_t input_registers[REGIS_COUNT] = {0};
     uint8_t coils[REGIS_COUNT] = {0};
 
     // Try /dev/ttyUSB and /dev/ttyACM for MAX_SERIAL_PORT_ATTEMPTS times
@@ -118,6 +121,7 @@ int main() {
 
     coils[0] = reset_output1_enable;
     coils[1] = reset_output2_enable;
+    coils[2] = toggle_enable;
 
     int rcw = modbus_write_bits(ctx, REGIS_START, REGIS_COUNT, coils);
     if (rcw == -1)
