@@ -42,8 +42,8 @@ const uint8_t dePin = 13;
 //SoftwareSerial mySerial(rxPin, txPin);
 ModbusRTUSlave modbus(Serial, dePin); // serial port, driver enable pin for rs-485 (optional)
 
-bool coils[3];
-bool precoils[2];
+bool coils[3] = {0};
+bool precoils[2] = {0};
 bool discreteInputs[2];
 uint16_t holdingRegisters[2];
 uint16_t inputRegisters[2];
@@ -84,10 +84,11 @@ void loop() {
 
   modbus.poll();
 
-  if ((precoils[0] != coils[0]) || (precoils[1] != coils[1])) {
+  if (precoils[0] != coils[0])
     digitalWrite(coilsPins[2], coils[0]);
+
+  if (precoils[1] != coils[1])
     digitalWrite(coilsPins[3], coils[1]);
-  }
 
   // Serial.println(inputRegisters[0], DEC);
 
