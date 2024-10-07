@@ -34,7 +34,7 @@
 #define MAX_SERIAL_PORT_ATTEMPTS 5
 #define REGIS_START 0
 #define REGIS_COUNT 2
-#define COILS_REGIS 2
+#define COILS_REGIS 4
 #define POLL_INTERVAL 2
 
 #define CRC16_INIT 0xFFFF
@@ -492,7 +492,8 @@ int main(int argc, char *argv[])
     uint8_t response_receiver = 0;
     uint8_t reset_output1_enable = 1;
     uint8_t reset_output2_enable = 1;
-    uint8_t toggle_enable = 1;
+    uint8_t toggle1_enable = 1;
+    uint8_t toggle2_enable = 1;
     int server_port = 50002;
 
     threadArgs.radar_port = 55555;
@@ -1099,24 +1100,21 @@ int main(int argc, char *argv[])
                                 if (key && value)
                                 {
                                     if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0)
-                                    {
                                         reset_output1_enable = atoi(value);
-                                    }
                                     else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
-                                    {
                                         reset_output2_enable = atoi(value);
-                                    } 
-                                    else if (strcmp(key, "TOGGLE_ENABLE") == 0)
-                                    {
-                                        toggle_enable = atoi(value);
-                                    }
+                                    else if (strcmp(key, "TOGGLE1_ENABLE") == 0)
+                                        toggle1_enable = atoi(value);
+                                    else if (strcmp(key, "TOGGLE2_ENABLE") == 0)
+                                        toggle2_enable = atoi(value);
                                 }
                             }
 
                             fclose(file);
                             coils[0] = reset_output1_enable;
                             coils[1] = reset_output2_enable;
-                            coils[2] = toggle_enable;
+                            coils[2] = toggle1_enable;
+                            coils[3] = toggle2_enable;
                             int rcw = modbus_write_bits(ctx, REGIS_START, COILS_REGIS, coils);
                             if (rcw == -1)
                             {

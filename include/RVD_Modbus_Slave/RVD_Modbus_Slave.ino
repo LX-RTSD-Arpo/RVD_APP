@@ -42,8 +42,8 @@ const uint8_t dePin = 13;
 //SoftwareSerial mySerial(rxPin, txPin);
 ModbusRTUSlave modbus(Serial, dePin); // serial port, driver enable pin for rs-485 (optional)
 
-bool coils[3] = {0};
-bool precoils[2] = {0};
+bool coils[4] = {0};
+// bool precoils[2] = {0};
 bool discreteInputs[2];
 uint16_t holdingRegisters[2];
 uint16_t inputRegisters[2];
@@ -58,7 +58,7 @@ void setup() {
   pinMode(inputRegistersPins[0], INPUT);
   pinMode(inputRegistersPins[1], INPUT);
 
-  modbus.configureCoils(coils, 3);                       // bool array of coil values, number of coils
+  modbus.configureCoils(coils, 4);                       // bool array of coil values, number of coils
   modbus.configureDiscreteInputs(discreteInputs, 2);     // bool array of discrete input values, number of discrete inputs
   modbus.configureHoldingRegisters(holdingRegisters, 2); // unsigned 16 bit integer array of holding register values, number of holding registers
   modbus.configureInputRegisters(inputRegisters, 2);     // unsigned 16 bit integer array of input register values, number of input registers
@@ -68,8 +68,8 @@ void setup() {
 }
 
 void loop() {
-  precoils[0] = coils[0];
-  precoils[1] = coils[1];
+  // precoils[0] = coils[0];
+  // precoils[1] = coils[1];
   // coils[0] = false;
   // coils[1] = false;
   //discreteInputs[0] = 1;//!digitalRead(discreteInputsPins[0]);
@@ -88,9 +88,11 @@ void loop() {
 
   // Serial.println(inputRegisters[0], DEC);
 
-  if (coils[2] == 1) {
+  if ((coils[2] == 1) || (coils[3] ==1)) {
     delay(holdingRegisters[0]);
-    coils[0] = false;
-    coils[1] = false;
+    if (coils[2] == 1)
+      coils[0] = false;
+    else
+      coils[1] = false;
   }
 }

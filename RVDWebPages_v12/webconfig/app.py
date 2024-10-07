@@ -322,20 +322,66 @@ def set_network_settings():
 def set_relay_control():
     try:
         data = request.json
-        relay01 = data.get('relay01')
-        relay02 = data.get('relay02')
-
-        print(f"Relay 1: {relay01}, Relay 2: {relay02}")
+        relay01 = int(data.get('relay01'))
+        relay02 = int(data.get('relay02'))
 
         with open(rvd_config_path, 'r') as file:
             lines = file.readlines()
+        
+        updates = {
+            "RESET_OUTPUT1_ENABLE=": relay01 if relay01 != 2 else 1,
+            "RESET_OUTPUT2_ENABLE=": relay02 if relay02 != 2 else 1,
+            "TOGGLE1_ENABLE=": 1 if relay01 == 2 else 0,
+            "TOGGLE2_ENABLE=": 1 if relay02 == 2 else 0
+        }
 
         for i in range(len(lines)):
-            if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
-                lines[i] = f"RESET_OUTPUT1_ENABLE={relay01}\n"
-            elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
-                lines[i] = f"RESET_OUTPUT2_ENABLE={relay02}\n"
-        
+            for key, value in updates.items():
+                if lines[i].startswith(key):
+                    lines[i] = f"{key}{value}\n"
+
+        # if (relay01 == 2) and (relay02 != 2):
+        #     # print(f"Relay 1: {relay01}, Relay 2: {relay02}")
+        #     for i in range(len(lines)):
+        #         if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT1_ENABLE=1\n"
+        #         elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT2_ENABLE={relay02}\n"
+        #         elif lines[i].startswith("TOGGLE1_ENABLE="):
+        #             lines[i] = f"TOGGLE1_ENABLE=1\n"
+        #         elif lines[i].startswith("TOGGLE2_ENABLE="):
+        #             lines[i] = f"TOGGLE2_ENABLE=0\n"
+        # elif (relay01 != 2) and (relay02 == 2):
+        #     for i in range(len(lines)):
+        #         if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT1_ENABLE={relay01}\n"
+        #         elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT2_ENABLE=1\n"
+        #         elif lines[i].startswith("TOGGLE1_ENABLE="):
+        #             lines[i] = f"TOGGLE1_ENABLE=0\n"
+        #         elif lines[i].startswith("TOGGLE2_ENABLE="):
+        #             lines[i] = f"TOGGLE2_ENABLE=1\n"
+        # elif (relay01 == 2) and (relay02 == 2):
+        #     for i in range(len(lines)):
+        #         if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT1_ENABLE=1\n"
+        #         elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT2_ENABLE=1\n"
+        #         elif lines[i].startswith("TOGGLE1_ENABLE="):
+        #             lines[i] = f"TOGGLE1_ENABLE=1\n"
+        #         elif lines[i].startswith("TOGGLE2_ENABLE="):
+        #             lines[i] = f"TOGGLE2_ENABLE=1\n"
+        # else:
+        #     for i in range(len(lines)):
+        #         if lines[i].startswith("RESET_OUTPUT1_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT1_ENABLE={relay01}\n"
+        #         elif lines[i].startswith("RESET_OUTPUT2_ENABLE="):
+        #             lines[i] = f"RESET_OUTPUT2_ENABLE={relay02}\n"
+        #         elif lines[i].startswith("TOGGLE1_ENABLE="):
+        #             lines[i] = f"TOGGLE1_ENABLE=0\n"
+        #         elif lines[i].startswith("TOGGLE2_ENABLE="):
+        #             lines[i] = f"TOGGLE2_ENABLE=0\n"
+            
         with open(rvd_config_path, 'w') as file:
             file.writelines(lines)
 
