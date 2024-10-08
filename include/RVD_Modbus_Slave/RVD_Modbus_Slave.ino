@@ -92,7 +92,7 @@ void loop() {
     delay(holdingRegisters[0]);
     if (coils[2] == 1)
       coils[0] = false;
-    else
+    if (coils[3] == 1)
       coils[1] = false;
   }
 }
