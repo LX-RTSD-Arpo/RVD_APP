@@ -429,7 +429,7 @@ def get_ntp_settings():
                     ntp_autosync = "ON"  # ntpdate line is not commented
                 break
 
-        ntp_current_time = datetime.now
+        ntp_current_time = datetime.now()
 
         return jsonify({
                 "ntp_priserver": ntp_server,
