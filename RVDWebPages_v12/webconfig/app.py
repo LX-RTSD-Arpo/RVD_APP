@@ -207,7 +207,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # | +-------- Hour (0 - 23)
 # +---------- Minute (0 - 59)
 
-#* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
 */{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
             """
         else:
@@ -223,7 +223,7 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # | +-------- Hour (0 - 23)
 # +---------- Minute (0 - 59)
 
-#* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
+* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
 #*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
             """
 
