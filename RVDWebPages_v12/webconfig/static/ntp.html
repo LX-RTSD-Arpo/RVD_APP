@@ -65,6 +65,10 @@
                                         <td id="titlex"><span id="ntp_status" required>กำลังโหลด...</span></td>
                                     </tr>
                                     <tr>
+                                        <td><b>Device Current Time</b></td>
+                                        <td id="titlex"><span id="ntp_current_time" required>กำลังโหลด...</span></td>
+                                    </tr>
+                                    <tr>
                                         <td>&nbsp;</td>
                                     </tr>
                                     <tr>
@@ -183,6 +187,7 @@
                                         if (response.ok) {
                                             document.getElementById('ntp_priserver').innerText = data.ntp_priserver;
                                             document.getElementById('ntp_status').innerText = data.ntp_status;
+                                            document.getElementById('ntp_current_time').innerText = data.ntp_current_time;
                                             document.getElementById('ntp_autosync').innerText = data.ntp_autosync;
                                             document.getElementById('ntp_timesync').innerText = data.ntp_timesync;
                                             document.getElementById('ntp_timeout').innerText = data.ntp_timeout;

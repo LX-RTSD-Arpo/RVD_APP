@@ -142,7 +142,7 @@ class PvrStatistics:
             self.count_num = 0
 
             for msg_num in range(8):
-                self.utc_timestamp_milliseconds = int(self.time.time() * 1000)
+                self.utc_timestamp_milliseconds = int(time.time() * 1000)
                 self.last_three_digits = format(self.utc_timestamp_milliseconds % 1000, '010b').zfill(10)
                 self.info_part_1_bin = format(int(self.utc_timestamp_milliseconds/1000), '032b') + "00000000000000000000" + self.last_three_digits + "01"
                 self.info_part_1_hex = format(int(self.info_part_1_bin, 2), '016x').zfill(16)
@@ -155,11 +155,11 @@ class PvrStatistics:
                 if msg_num >= 5:
                     class_num += 1
                 if zone_num == 1:
-                    count_num = msg_num + 8
+                    self.count_num = msg_num + 8
                 elif zone_num == 2:
-                    count_num = msg_num + 16
+                    self.count_num = msg_num + 16
 
-                self.msg_num_bin = format(count_num, '09b').zfill(9)
+                self.msg_num_bin = format(self.count_num, '09b').zfill(9)
                 self.zone_num_bin = format(zone_num, '05b').zfill(5)
 
                 if class_num != 0:
@@ -191,17 +191,17 @@ class PvrStatistics:
                     self.rearranged_Occ_hex = self.rearranged_Occ_hex.replace(" ", "0")
                     self.rearranged_Percentile_85th_hex = self.rearranged_Percentile_85th_hex.replace(" ", "0")
 
-                    self.temp_msg_bin[counter] = "078105" + self.rearranged_volume_hex + "078105" + self.rearranged_AvgSpeed_hex + "078105" + self.rearranged_Occ_hex + "078105" + self.rearranged_Percentile_85th_hex
-                    counter += 1
+                    self.temp_msg_bin[self.counter] = "078105" + self.rearranged_volume_hex + "078105" + self.rearranged_AvgSpeed_hex + "078105" + self.rearranged_Occ_hex + "078105" + self.rearranged_Percentile_85th_hex
+                    self.counter += 1
                 
             self.temp_msg_str = ''.join(self.temp_msg_bin)
-            self.msg_781_without_hdr[zone_num] = self.info_part_0_full + self.info_part_1_full + self.msg_782_full + self.msg_781_num0[zone_num] + self.temp_msg_str
+            self.msg_781_without_hdr[zone_num] = info_part_0_full + self.info_part_1_full + self.msg_782_full + self.msg_781_num0[zone_num] + self.temp_msg_str
 
             self.byte_msg_781 = bytes.fromhex("".join(self.msg_781_without_hdr[zone_num]))
             self.crc_781 = calculate_crc(self.byte_msg_781)
                 
             self.msg_781_without_hdr_with_crc[zone_num] = self.byte_msg_781 + self.crc_781.to_bytes(2, 'big')
-            self.msg_781_full[zone_num] = self.stat_hdr[zone_num] + self.msg_781_without_hdr_with_crc[zone_num].hex()
+            self.msg_781_full[zone_num] = stat_hdr[zone_num] + self.msg_781_without_hdr_with_crc[zone_num].hex()
     
         return self.msg_781_full
     
@@ -258,7 +258,7 @@ while True:
     current_minute = current_time.minute
     current_second = current_time.second
 
-    if (current_minute % 5 == 0 or current_minute == 0) and current_second == 0:
+    if (current_minute % 2 == 0 or current_minute == 0) and current_second == 0:
         summary = pvr_data.statistic_report()
 
         for messages in range(no_zone):

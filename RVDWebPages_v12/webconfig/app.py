@@ -4,7 +4,6 @@ from werkzeug.security import generate_password_hash, check_password_hash
 import configparser
 import subprocess
 from datetime import datetime, timedelta
-from datetime import datetime
 import pytz
 
 app = Flask(__name__)
@@ -410,7 +409,7 @@ def get_ntp_settings():
 
             if "no server suitable" in ntpdate_output:
                 status = "NTP server unreachable"
-            elif "adjust time server" in ntpdate_output:
+            elif ("adjust time server" in ntpdate_output) or ("step time server" in ntpdate_output):
                 status = "NTP synchronized"
             else:
                 status = "NTP status unknown"
@@ -430,9 +429,12 @@ def get_ntp_settings():
                     ntp_autosync = "ON"  # ntpdate line is not commented
                 break
 
+        ntp_current_time = datetime.now
+
         return jsonify({
                 "ntp_priserver": ntp_server,
                 "ntp_status": status,
+                "ntp_current_time": ntp_current_time,
                 "ntp_autosync": ntp_autosync,
                 "ntp_timesync": ntp_timesync,
                 "ntp_timeout": ntp_timeout
