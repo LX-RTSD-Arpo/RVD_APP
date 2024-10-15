@@ -472,6 +472,14 @@ def login():
             return "ชื่อผู้ใช้หรือรหัสผ่านไม่ถูกต้อง", 401
     return render_template('login.html')
 
+@app.route('/ConnectCommand', methods=['GET', 'POST'])
+def ConnectCommand():
+    try:
+        subprocess.run(['/root/RVD_APP/tools/bridge_on.sh'], check=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
+        return jsonify({"message": "Connecting to Radar..."}), 200
+    except Exception as e:
+        return jsonify({"error": str(e)}), 500
+    
 @app.route('/logout', methods=['GET', 'POST'])
 def logout():
     session.pop('loggedin', None)  # ลบ session

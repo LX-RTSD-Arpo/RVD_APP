@@ -20,6 +20,17 @@ function sendTestCommand() {
     });
 }
 
+function ConnectCommand() {
+    fetch('/ConnectCommand', {
+        method: 'POST',
+    }).then(response => {
+        alert("Test command sent successfully!");
+    }).catch(error => {
+        console.error("Error:", error);
+        alert("Error sending connect command.");
+    });
+}
+
 async function fetchRVDData() {
 	try {
 		const response = await fetch('/get-firmware-detail');
@@ -101,6 +112,16 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
         document.addEventListener('click', resetIdleTime);
         document.addEventListener('scroll', resetIdleTime);
     };
+}
+
+async function loadMenu() {
+	try {
+		const response = await fetch('/static/menu.html'); // Adjust the path if needed
+		const menuHTML = await response.text();
+		document.getElementById('menu-container').innerHTML = menuHTML;
+	} catch (error) {
+		console.error('Error loading menu:', error);
+	}
 }
 
 function confirmLogout() {

@@ -16,6 +16,5 @@ sudo ip link set br0 up
 sudo ip link set eth0 up
 sudo ip link set eth1 up
 
-
 #brctl addbr br0
 #brctl addif br0 eth1 eth2

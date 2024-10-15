@@ -1,0 +1,91 @@
+<!DOCTYPE html PUBLIC "-//W3C//DTD XHTML 1.0 STRICT//EN" "DTD/xhtml1-strict.dtd">
+<html>
+
+<head>
+	<title>RVD-Field Web Management</title>
+	<link href="/static/mchp.css" rel="stylesheet" type="text/css" />
+	<script src="/static/mchp.js" type="text/javascript"></script>
+	<script src="/static/javascriptMD5.js" type="text/javascript"></script>
+</head>
+
+<body onLoad="allowAJAX=true;" onUnload="allowAJAX=false;">
+	<div id="shadow-one">
+		<div id="shadow-two">
+			<div id="shadow-three">
+				<div id="shadow-four">
+					<div id="page">
+						<div style="padding:0 0 5px 5px"><img src="/static/logo.gif" /></div>
+						<div id="title">
+							<div class="right">RVD-Field Processor</div><span id="hello">&nbsp;</span>
+							<div class="left">Remote Setting</div><span id="hello">&nbsp;</span>
+						</div>
+
+						<div id="menu-container"></div>
+
+						<div id="content">
+							<form id="firmware-upload-form">
+								<div class="examplebox">
+									<table align="center">
+                                        <tr>
+											<td></td>
+											<td></td>
+										</tr>
+                                        <tr>
+											<td></td>
+											<td></td>
+										</tr>
+                                        
+									</table>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+									<button onclick="ConnectCommand()" style="height:30px; width:180px;">-- Connect to Radar --</button>
+
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+									<td colspan="3" align="center" valign="middle">
+										<div align="center"><b>--------------------------------------</b></div>
+									</td>
+
+									<button onclick="sendRebootCommand()" style="height:30px; width:250px;">-- Finish Setting & Reboot --</button>
+                                    <tr>
+                                        <td></td>
+                                        <td></td>
+                                    </tr>
+								</div>
+							</form>
+
+							<div id="upload-status">
+								<p></p>
+							</div>
+
+							<script>
+								initializeIdleLogoutHandler(300);
+								loadMenu();
+							</script>
+						</div>
+						<!--<script type="text/javascript">
+							// Parses the xmlResponse from vars.xml and updates the status box
+							function updateStatus(xmlData) {
+								document.getElementById('fStatus').innerHTML = getXMLValue(xmlData, 'fStatus');
+							}
+							setTimeout("newAJAXCommand('fupload.xml', updateStatus, true)", 500);
+						</script>
+					-->
+
+						<div class="spacer">&nbsp;</div>
+						<div id="footer">Copyright &copy; 2024 Loxley Public Company Limited, Inc.</div>
+
+					</div>
+				</div>
+			</div>
+		</div>
+	</div>
+
+</body>
+
+</html>
