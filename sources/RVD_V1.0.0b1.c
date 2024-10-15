@@ -50,15 +50,15 @@ unsigned char start[30] = {0x7e, 0x01, 0x0c, 0x00, 0x10, 0x07, 0x00, 0x00, 0x00,
                            0xd9, 0x03,             // Port
                            0x00, 0x00,
                            0xf4, 0x49}; // CRC
-const char Header[16] = {0x7e, 0x01, 0x10, 0x00, 0x21, 0x04, 0x00, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x01, 0xE5, 0xCD};
-const char MsgAct[5] = {0x03, 0xfb, 0x08, 0xE8, 0x03};
+const char kHeader[16] = {0x7e, 0x01, 0x10, 0x00, 0x21, 0x04, 0x00, 0x00, 0x00, 0x08, 0x01, 0x00, 0x00, 0x01, 0xE5, 0xCD};
+const char kMsgAct[5] = {0x03, 0xfb, 0x08, 0xE8, 0x03};
 char dev_addr[2] = {0x02, 0x65};
-const char *targetInterface1 = "eth0";
-const char *targetInterface2 = "eth1";
-const uint16_t dev_ver = 0x00C8;
-const uint32_t dev_dns = 0x00000000;
+const char *kTargetInterface1 = "eth0";
+const char *kTargetInterface2 = "eth1";
+const uint16_t kDevice_version = 0x00C8;
+const uint32_t kDevice_DNS = 0x00000000;
 uint8_t dev_ntimeout = 30;
-const uint16_t crc_table[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
+const uint16_t kCRC_Table[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x60c6, 0x70e7,
                               0x8108, 0x9129, 0xa14a, 0xb16b, 0xc18c, 0xd1ad, 0xe1ce, 0xf1ef,
                               0x1231, 0x0210, 0x3273, 0x2252, 0x52b5, 0x4294, 0x72f7, 0x62d6,
                               0x9339, 0x8318, 0xb37b, 0xa35a, 0xd3bd, 0xc39c, 0xf3ff, 0xe3de,
@@ -90,7 +90,7 @@ const uint16_t crc_table[] = {0x0000, 0x1021, 0x2042, 0x3063, 0x4084, 0x50a5, 0x
                               0x7c26, 0x6c07, 0x5c64, 0x4c45, 0x3ca2, 0x2c83, 0x1ce0, 0x0cc1,
                               0xef1f, 0xff3e, 0xcf5d, 0xdf7c, 0xaf9b, 0xbfba, 0x8fd9, 0x9ff8,
                               0x6e17, 0x7e36, 0x4e55, 0x5e74, 0x2e93, 0x3eb2, 0x0ed1, 0x1ef0};
-const char* config_file = "/root/RVD_APP/RVDWebPages_v12/webconfig/web_config.ini";
+const char* kConfig_File = "/root/RVD_APP/RVDWebPages_v12/webconfig/web_config.ini";
 
 char serial_port[20];
 int data_size, len, leng, msg_counter, receiver_size, rbc, sock_mcast, sock_raw, sock_serv;
@@ -104,8 +104,8 @@ struct sockaddr_in mcast, mcast_dest, receiver, *sa, server;
 struct timeval tv, net_tv, stimeout;
 pthread_t udpth, aliveth, stimeth, ntp_thread;
 
-int a, b, i, j, k, pack_byte, q, val, Crc_Byte, Crc_Time, Crc_UDP;
-unsigned char bu_buf[BUF_SIZ], checker[BUF_SIZ], Tchecker[BUF_SIZ], udp_checker[BUF_SIZ], client_buf[BUF_SIZ], crc_buf[2], crc_tbuf[2], crc_ubuf[2], dummy1[22],
+int a, b, i, j, k, q, val, Crc_Byte, Crc_Time, Crc_UDP;
+unsigned char backup_buffer[BUF_SIZ], checker[BUF_SIZ], Tchecker[BUF_SIZ], udp_checker[BUF_SIZ], client_buf[BUF_SIZ], crc_buf[2], crc_tbuf[2], crc_ubuf[2], dummy1[22],
     dummy2[33], len_buf[2], recv_buf[BUF_SIZ], packet[BUF_SIZ], seq_buf[3], tcp_pack[BUF_SIZ], tm_buf[8], val_buf[BUF_SIZ], ver_buf[2];
 
 int mc, fd, idx;
@@ -190,41 +190,23 @@ int parse_config(const char *filename,
         if (key && value)
         {
             if (strcmp(key, "RADAR_IP") == 0)
-            {
                 strncpy(radar_ip, value, INET_ADDRSTRLEN);
-            }
             else if (strcmp(key, "RADAR_PORT") == 0)
-            {
                 *radar_port = atoi(value);
-            }
             else if (strcmp(key, "RADAR_ALIVE_PORT") == 0)
-            {
                 *radar_alive_port = atoi(value);
-            }
             else if (strcmp(key, "SERVER_PORT") == 0)
-            {
                 *server_port = atoi(value);
-            }
             else if (strcmp(key, "RESPONSE_SENDER") == 0)
-            {
                 *response_sender = atoi(value);
-            }
             else if (strcmp(key, "RESPONSE_RECEIVER") == 0)
-            {
                 *response_receiver = atoi(value);
-            }
             else if (strcmp(key, "DEVICE_NETWORK_TIMEOUT") == 0)
-            {
                 *dev_ntimeout = atoi(value);
-            }
             else if (strcmp(key, "RESET_OUTPUT1_ENABLE") == 0)
-            {
                 *reset_output1_enable = atoi(value);
-            }
             else if (strcmp(key, "RESET_OUTPUT2_ENABLE") == 0)
-            {
                 *reset_output2_enable = atoi(value);
-            }
         }
     }
 
@@ -263,7 +245,7 @@ void *Alive(void *args)
     for (int ip_byte = 0; ip_byte < 4; ++ip_byte)
         start[ip_byte + 20] = bytes[ip_byte];
 
-    uint16_t m_crc = checksum((unsigned char *)&start[12], 16, crc_table);
+    uint16_t m_crc = checksum((unsigned char *)&start[12], 16, kCRC_Table);
 
     // Put the CRC value into start[28] and start[29]
     start[28] = (m_crc >> 8) & 0xFF; // High byte
@@ -373,7 +355,7 @@ void *udpsocket(void *args)
             leng += data_size;
             // printf("\ndata size: %d", data_size);
             memcpy(udp_checker, &packet[1], leng - 1);
-            Crc_UDP = checksum(udp_checker, leng - 1, crc_table);
+            Crc_UDP = checksum(udp_checker, leng - 1, kCRC_Table);
 
             memcpy(&crc_ubuf, &Crc_UDP, 2);
             for (a = 2; a > 0; a--)
@@ -433,17 +415,17 @@ time_t get_file_mod_time(const char*);
 void* ntp_sync_thread(void* arg) {
     NTPSettings* settings = (NTPSettings*)arg;
 
-    read_ntp_settings(config_file, settings);  // Initial settings load
-    time_t last_mod_time = get_file_mod_time(config_file);  // Get initial modification time
+    read_ntp_settings(kConfig_File, settings);  // Initial settings load
+    time_t last_mod_time = get_file_mod_time(kConfig_File);  // Get initial modification time
     settings->ntp_timesync *= 60;
     
     while (1) {
-        time_t current_mod_time = get_file_mod_time(config_file);
+        time_t current_mod_time = get_file_mod_time(kConfig_File);
         int timewait = 0;
 
         if (current_mod_time > last_mod_time) {
             printf("\nSettings file modified. Reloading configuration...\n");
-            read_ntp_settings(config_file, settings);  // Reload settings
+            read_ntp_settings(kConfig_File, settings);  // Reload settings
             settings->ntp_timesync *= 60;
             last_mod_time = current_mod_time;  // Update last modification time
         }
@@ -482,7 +464,7 @@ void* ntp_sync_thread(void* arg) {
 
 int main(int argc, char *argv[])
 {
-    NetworkInfo *networkInfo = ExtractNetwork(targetInterface1, targetInterface2);
+    NetworkInfo *networkInfo = ExtractNetwork(kTargetInterface1, kTargetInterface2);
     ThreadArgs threadArgs;
     alive_thread_args alive_args;
     threadArgs.thread_function = udpsocket;
@@ -629,7 +611,7 @@ int main(int argc, char *argv[])
         exit(EXIT_FAILURE);
     }
 
-    strcpy(mac.ifr_name, targetInterface2);
+    strcpy(mac.ifr_name, kTargetInterface2);
     ioctl(sock_serv, SIOCGIFHWADDR, &mac);
     getifaddrs(&ifap);
     for (ifa = ifap; ifa; ifa = ifa->ifa_next)
@@ -640,7 +622,7 @@ int main(int argc, char *argv[])
 
     NTPSettings settings;
     
-    read_ntp_settings(config_file, &settings);  // Initial settings load
+    read_ntp_settings(kConfig_File, &settings);  // Initial settings load
 
     // pthread_t udpth, aliveth, stimeth, ntp_thread;
     if (pthread_create(&udpth, NULL, threadArgs.thread_function, (void *)&threadArgs) != 0)
@@ -729,10 +711,10 @@ int main(int argc, char *argv[])
                     }
                     else
                     {
-                        memset(bu_buf, '\0', BUF_SIZ);
+                        memset(backup_buffer, '\0', BUF_SIZ);
                         printf("\n\t[+]We have unsent data");
-                        dequeue(&cb1, bu_buf);
-                        send(newfd, bu_buf, bu_buf[1] << 8 | bu_buf[2], 0);
+                        dequeue(&cb1, backup_buffer);
+                        send(newfd, backup_buffer, backup_buffer[1] << 8 | backup_buffer[2], 0);
                         printf(" --> SENT!!\nCB count : %d\n", cb1.count);
                     }
                 }
@@ -753,7 +735,7 @@ int main(int argc, char *argv[])
                     for (i = 1; i < (nbytes - 3); i++)
                         val_buf[i - 1] = client_buf[i];
 
-                    val = checksum(val_buf, nbytes - 4, crc_table);
+                    val = checksum(val_buf, nbytes - 4, kCRC_Table);
                     memcpy(&crc_buf, &val, 2);
                     printf("\n\t |-CRC: %02X %02X : ", crc_buf[1], crc_buf[0]);
                     for (i = 0; i < nbytes; i++)
@@ -818,7 +800,7 @@ int main(int argc, char *argv[])
                             {
                                 tcp_pack[b++] = 0x01;
                                 printf("\t\t |-Version: ");
-                                memcpy(&ver_buf, &dev_ver, 2);
+                                memcpy(&ver_buf, &kDevice_version, 2);
                                 for (i = 2; i > 0; i--)
                                     tcp_pack[b + (2 - i)] = ver_buf[i - 1];
                                 printf("%d ", tcp_pack[b] << 8 | tcp_pack[b + 1]);
@@ -838,7 +820,7 @@ int main(int argc, char *argv[])
                                     tcp_pack[b + i] = atoi(networkInfo->gateway[i]);
                                 printf("\n\t\t |-Gateway: %d.%d.%d.%d", tcp_pack[b], tcp_pack[b + 1], tcp_pack[b + 2], tcp_pack[b + 3]);
                                 b += 4;
-                                memcpy(&tcp_pack[b], &dev_dns, 4);
+                                memcpy(&tcp_pack[b], &kDevice_DNS, 4);
                                 printf("\n\t\t |-DNS: %d", tcp_pack[b + 3]);
                                 for (i = b + 2; i >= b; i--)
                                     printf(".%d", tcp_pack[i]);
@@ -851,7 +833,7 @@ int main(int argc, char *argv[])
                             }
 
                             memcpy(checker, &tcp_pack[1], b - 1);
-                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            Crc_Byte = checksum(checker, b - 1, kCRC_Table);
                             memcpy(&crc_buf, &Crc_Byte, 2);
                             for (i = 2; i > 0; i--)
                                 tcp_pack[b + (2 - i)] = crc_buf[i - 1];
@@ -977,7 +959,7 @@ int main(int argc, char *argv[])
                             }
 
                             memcpy(checker, &tcp_pack[1], b - 1);
-                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            Crc_Byte = checksum(checker, b - 1, kCRC_Table);
                             memcpy(&crc_buf, &Crc_Byte, 2);
                             for (i = 2; i > 0; i--)
                                 tcp_pack[b + 2 - i] = crc_buf[i - 1];
@@ -1134,7 +1116,7 @@ int main(int argc, char *argv[])
                             }
 
                             memcpy(checker, &tcp_pack[1], b - 1);
-                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            Crc_Byte = checksum(checker, b - 1, kCRC_Table);
                             memcpy(&crc_buf, &Crc_Byte, 2);
                             for (i = 2; i > 0; i--)
                                 tcp_pack[b + (2 - i)] = crc_buf[i - 1];
@@ -1167,7 +1149,7 @@ int main(int argc, char *argv[])
                             tcp_pack[b++] = 0x08;
 
                             memcpy(checker, &tcp_pack[1], b - 1);
-                            Crc_Byte = checksum(checker, b - 1, crc_table);
+                            Crc_Byte = checksum(checker, b - 1, kCRC_Table);
                             memcpy(&crc_buf, &Crc_Byte, 2);
                             for (i = 2; i > 0; i--)
                                 tcp_pack[b + (2 - i)] = crc_buf[i - 1];
@@ -1193,7 +1175,7 @@ int main(int argc, char *argv[])
                         b += 3;
                         tcp_pack[b++] = 0x05;
                         memcpy(checker, &tcp_pack[1], b - 1);
-                        Crc_Byte = checksum(checker, b - 1, crc_table);
+                        Crc_Byte = checksum(checker, b - 1, kCRC_Table);
                         memcpy(&crc_buf, &Crc_Byte, 2);
                         for (i = 2; i > 0; i--)
                             tcp_pack[b + (2 - i)] = crc_buf[i - 1];
@@ -1230,13 +1212,13 @@ void SetTime()
 
     printf("\nMessage Action:2000 (Set UNIX Time)");
     ;
-    for (d = 0; d < sizeof(Header); d++)
-        time_conf[e + d] = Header[d];
-    e += sizeof(Header);
+    for (d = 0; d < sizeof(kHeader); d++)
+        time_conf[e + d] = kHeader[d];
+    e += sizeof(kHeader);
 
-    for (d = 0; d < sizeof(MsgAct); d++)
-        time_conf[e + d] = MsgAct[d];
-    e += sizeof(MsgAct);
+    for (d = 0; d < sizeof(kMsgAct); d++)
+        time_conf[e + d] = kMsgAct[d];
+    e += sizeof(kMsgAct);
 
     time_conf[e++] = 0x00;
     time_conf[e++] = 0x04;
@@ -1244,9 +1226,9 @@ void SetTime()
     time_conf[e++] = 0x01;
     e += 2;
 
-    for (d = 0; d < sizeof(MsgAct); d++)
-        time_conf[e + d] = MsgAct[d];
-    e += sizeof(MsgAct);
+    for (d = 0; d < sizeof(kMsgAct); d++)
+        time_conf[e + d] = kMsgAct[d];
+    e += sizeof(kMsgAct);
 
     time_conf[e++] = 0x01;
     time_conf[e++] = 0x00;
@@ -1255,9 +1237,9 @@ void SetTime()
     time_conf[e++] = 0x00;
     time_conf[e++] = 0x00;
 
-    for (d = 0; d < sizeof(MsgAct); d++)
-        time_conf[e + d] = MsgAct[d];
-    e += sizeof(MsgAct);
+    for (d = 0; d < sizeof(kMsgAct); d++)
+        time_conf[e + d] = kMsgAct[d];
+    e += sizeof(kMsgAct);
 
     time_conf[e++] = 0x02;
     time_conf[e++] = 0x00;
@@ -1268,28 +1250,28 @@ void SetTime()
     printf("\nUNIX Time (second)\n\tIn decimal: %ld s\n\tIn hexadecimal: %02X %02X %02X %02X s\n", t, time_conf[48], time_conf[47], time_conf[46], time_conf[45]);
 
     for (d = 0; d < 6; d++)
-        dummy1[d] = time_conf[sizeof(Header) + d + 3];
+        dummy1[d] = time_conf[sizeof(kHeader) + d + 3];
 
     for (d = 6; d < 14; d++)
-        dummy1[d] = time_conf[sizeof(Header) + d + 8];
+        dummy1[d] = time_conf[sizeof(kHeader) + d + 8];
 
     for (d = 14; d < 22; d++)
-        dummy1[d] = time_conf[sizeof(Header) + d + 11];
+        dummy1[d] = time_conf[sizeof(kHeader) + d + 11];
 
     memset(Tchecker, '\0', BUF_SIZ);
     memcpy(Tchecker, &dummy1[0], sizeof(dummy1));
-    Crc_Time = checksum(Tchecker, sizeof(dummy1), crc_table);
+    Crc_Time = checksum(Tchecker, sizeof(dummy1), kCRC_Table);
     memcpy(&crc_tbuf, &Crc_Time, 2);
 
     time_conf[25] = crc_tbuf[0];
     time_conf[26] = crc_tbuf[1];
 
     for (d = 0; d < 33; d++)
-        dummy2[d] = time_conf[sizeof(Header) + d];
+        dummy2[d] = time_conf[sizeof(kHeader) + d];
 
     memset(Tchecker, '\0', BUF_SIZ);
     memcpy(Tchecker, &dummy2[0], sizeof(dummy2));
-    Crc_Time = checksum(Tchecker, sizeof(dummy2), crc_table);
+    Crc_Time = checksum(Tchecker, sizeof(dummy2), kCRC_Table);
     memcpy(&crc_tbuf, &Crc_Time, 2);
 
     time_conf[49] = crc_tbuf[1];
