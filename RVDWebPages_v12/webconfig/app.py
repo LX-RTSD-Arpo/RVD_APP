@@ -43,8 +43,8 @@ def parse_eth_config(lines1, lines2, lines3):
     global config
     config = {}
     config['host'] = subprocess.check_output(['hostname']).strip().decode('utf-8')
-    config['primary_dns'] = "undefined"
-    config['secondary_dns'] = "undefined"
+    # config['primary_dns'] = "undefined"
+    # config['secondary_dns'] = "undefined"
 
     try:
         for line1 in lines1:
@@ -55,6 +55,12 @@ def parse_eth_config(lines1, lines2, lines3):
                 config['subnet_mask'] = line1.split()[1]
             elif line1.startswith('gateway'):
                 config['gateway'] = line1.split()[1]
+            elif line1.startswith('dns-nameservers') or line1.startswith('#dns-nameservers'):
+                dns_servers = line1.split()[1:]
+                if len(dns_servers) > 0:
+                    config['primary_dns'] = dns_servers[0]
+                if len(dns_servers) > 1:
+                    config['secondary_dns'] = dns_servers[1]
 
         for line2 in lines2:
             line2 = line2.strip()
@@ -89,7 +95,7 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
         f"    address {ip_address2}/24\n",
         f"    netmask {subnet_mask}\n",
         f"    gateway {gateway}\n",
-        f"    #dns-nameservers {primary_dns} {secondary_dns}\n",
+        f"    dns-nameservers {primary_dns} {secondary_dns}\n",
         f"    post-up ip route add {gateway}/32 dev eth0\n",
         f"    pre-down ip route del {gateway}/32 dev eth0\n",
     ]
