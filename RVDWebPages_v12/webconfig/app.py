@@ -137,6 +137,9 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
     write_file(eth1_path, eth1_config)
     write_file(br0_path, br0_config)
     write_file(rvd_config_path, rvd_config)
+
+    with open('/etc/hostname', 'w') as hostname_file:
+        hostname_file.write(host + '\n')
     print("Network settings written successfully.")
 
 def extract_version():

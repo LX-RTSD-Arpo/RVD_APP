@@ -85,7 +85,6 @@ function initializeIdleLogoutHandler(idleLimit = 300) {
     }
 
     //checkLogin();
-
     setInterval(() => {
         idleTime++;
         if (idleTime >= idleLimit && !confirmationShown) {
