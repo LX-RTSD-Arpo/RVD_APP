@@ -21,17 +21,17 @@ sudo timedatectl set-timezone Asia/Bangkok
 #ntpdate 10.13.80.254
 
 # # Network configuration
-SOURCE_DIR="/root/RVD_APP/config"
-DEST_DIR="/etc/network/interfaces.d"
+# SOURCE_DIR="/root/RVD_APP/config"
+# DEST_DIR="/etc/network/interfaces.d"
 
-if [[ ! -f "$SOURCE_DIR/custom_eth0" || ! -f "$SOURCE_DIR/custom_eth1" || ! -f "$SOURCE_DIR/custom_br0" ]]; then
-  echo "Custom configuration files not found in $SOURCE_DIR"
-  exit 1
-fi
+# if [[ ! -f "$SOURCE_DIR/custom_eth0" || ! -f "$SOURCE_DIR/custom_eth1" || ! -f "$SOURCE_DIR/custom_br0" ]]; then
+#   echo "Custom configuration files not found in $SOURCE_DIR"
+#   exit 1
+# fi
 
-sudo cp "$SOURCE_DIR/custom_eth0" "$DEST_DIR/eth0"
-sudo cp "$SOURCE_DIR/custom_eth1" "$DEST_DIR/eth1"
-sudo cp "$SOURCE_DIR/custom_br0" "$DEST_DIR/br0"
+# sudo cp "$SOURCE_DIR/custom_eth0" "$DEST_DIR/eth0"
+# sudo cp "$SOURCE_DIR/custom_eth1" "$DEST_DIR/eth1"
+# sudo cp "$SOURCE_DIR/custom_br0" "$DEST_DIR/br0"
 
 FILE="/etc/sysctl.conf"
 
@@ -56,7 +56,7 @@ chmod +x /root/RVD_APP/tools/bridge_on.shhj
 chmod +x /root/RVD_APP/tools/bridge_off.sh
 chmod +x /root/RVD_APP/tools/br_Off.sh
 chmod +x /root/RVD_APP/config/arduino_install.sh
-/root/RVD_APP/config/arduino_install.sh
+#/root/RVD_APP/config/arduino_install.sh
 # NEW_HOSTNAME="RVD-FP"
 
 # # Update the /etc/hostname file

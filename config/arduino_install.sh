@@ -2,6 +2,7 @@
 
 curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
 sudo mv bin/arduino-cli /usr/local/bin/
+chmod +x /usr/local/bin/arduino-cli
 arduino-cli version
 arduino-cli config init
 arduino-cli core update-index
