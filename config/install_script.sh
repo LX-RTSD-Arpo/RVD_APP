@@ -56,7 +56,7 @@ chmod +x /root/RVD_APP/tools/bridge_on.shhj
 chmod +x /root/RVD_APP/tools/bridge_off.sh
 chmod +x /root/RVD_APP/tools/br_Off.sh
 chmod +x /root/RVD_APP/config/arduino_install.sh
-#/root/RVD_APP/config/arduino_install.sh
+/root/RVD_APP/config/arduino_install.sh
 # NEW_HOSTNAME="RVD-FP"
 
 # # Update the /etc/hostname file
