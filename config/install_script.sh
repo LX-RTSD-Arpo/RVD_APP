@@ -1,24 +1,29 @@
 #!/bin/bash
 
-Install neccesory packages
-apt-get update && sudo apt-get upgrade -y
-apt install net-tools
-apt install build-essential
-apt-get install manpages-dev
-apt install nano
-apt install gpiod
-apt install htop
-apt install bridge-utils
-apt install cron
-apt install ntpdate
-apt-get install libmodbus-dev
-sudo apt-get install libncurses5-dev libncursesw5-dev
-python3 -m pip install flask
-python3 -m pip install pytz
+# Install neccesory packages
+if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
+    apt-get update && sudo apt-get upgrade -y
+    apt install net-tools
+    apt install build-essential
+    apt-get install manpages-dev
+    apt install nano
+    apt install gpiod
+    apt install htop
+    apt install bridge-utils
+    apt install cron
+    apt install ntpdate
+    apt-get install libmodbus-dev
+    sudo apt-get install libncurses5-dev libncursesw5-dev
+    python3 -m pip install flask
+    python3 -m pip install pytz
+    echo "All tasks completed successfully."
+else
+    echo "No internet connection detected. Please check your network and try again."
+fi
 
 # Set timezone & sync-time
 sudo timedatectl set-timezone Asia/Bangkok
-#ntpdate 10.13.80.254
+# ntpdate 10.13.80.254
 
 # # Network configuration
 # SOURCE_DIR="/root/RVD_APP/config"
