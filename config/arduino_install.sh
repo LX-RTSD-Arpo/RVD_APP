@@ -11,7 +11,9 @@ if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
     arduino-cli core install arduino:avr
     arduino-cli lib install "ModbusRTUSlave"
 else
-    mv arduino-cli /usr/local/bin/
+    cd /root
+    mv /root/arduino-cli /usr/local/bin/
+    sudo chmod -R 755 /root/.arduino15
     chmod +x /usr/local/bin/arduino-cli
     arduino-cli config init
     arduino-cli core update-index

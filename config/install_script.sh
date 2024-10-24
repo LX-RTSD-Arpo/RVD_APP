@@ -57,7 +57,7 @@ sed -i -e 's/\r$//' /root/RVD_APP/tools/bridge_off.sh
 sed -i -e 's/\r$//' /root/RVD_APP/tools/br_Off.sh
 sed -i -e 's/\r$//' /root/RVD_APP/config/arduino_install.sh
 chmod +x /root/RVD_APP/run.sh
-chmod +x /root/RVD_APP/tools/bridge_on.shhj
+chmod +x /root/RVD_APP/tools/bridge_on.sh
 chmod +x /root/RVD_APP/tools/bridge_off.sh
 chmod +x /root/RVD_APP/tools/br_Off.sh
 chmod +x /root/RVD_APP/config/arduino_install.sh
