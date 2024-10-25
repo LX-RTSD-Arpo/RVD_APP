@@ -19,6 +19,8 @@ if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
     echo "All tasks completed successfully."
 else
     echo "No internet connection detected. Please check your network and try again."
+    python3 -m pip install flask
+    python3 -m pip install pytz
 fi
 
 # Set timezone & sync-time
