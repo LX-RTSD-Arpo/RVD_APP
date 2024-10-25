@@ -3,6 +3,7 @@
 if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
     curl -fsSL https://raw.githubusercontent.com/arduino/arduino-cli/master/install.sh | sh
     sudo mv bin/arduino-cli /usr/local/bin/
+    sudo chmod -R 755 /root/.arduino15
     chmod +x /usr/local/bin/arduino-cli
     arduino-cli version
     arduino-cli config init
