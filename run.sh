@@ -1,11 +1,11 @@
 #!/bin/bash
-
+# RVD_V1.0.1
 ip_address=$(ip addr show eth1 | grep 'inet ' | awk '{print $2}' | cut -d/ -f1)
 echo "Eth1 IP Address: $ip_address"
 
 #read -p "Enter Radar IP Address: " arg1
 config_file="/root/RVD_APP/config.txt"
-program_name="/root/RVD_APP/sources/rvd-v1.0.0b1"
+program_name="/root/RVD_APP/sources/rvd_program"
 command="$program_name $config_file $ip_address"
 max_attempts=99
 attempt=1

@@ -1,5 +1,5 @@
 #!/bin/bash
-
+# RVD_V1.0.1
 # Install neccesory packages
 if ping -q -c 1 -W 1 8.8.8.8 >/dev/null; then
     apt-get update && sudo apt-get upgrade -y
@@ -50,7 +50,7 @@ sysctl -p
 
 # echo "The line 'net.ipv4.ip_forward=1' has been uncommented and sysctl settings reloaded."
 
-gcc /root/RVD_APP/sources/RVD_V1.0.0b1.c -o /root/RVD_APP/sources/rvd-v1.0.0b1 -lpthread -lmodbus
+gcc /root/RVD_APP/sources/RVD_V1.0.1.c -o /root/RVD_APP/sources/rvd_program -lpthread -lmodbus
 gcc /root/RVD_APP/tests/IO_Test.c -o /root/RVD_APP/tests/iotest -lmodbus
 
 sed -i -e 's/\r$//' /root/RVD_APP/run.sh
@@ -88,8 +88,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # | +-------- Hour (0 - 23)
 # +---------- Minute (0 - 59)
 
-* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute 
-0/3  * * * * /usr/sbin/ntpdate 10.13.80.254 > /dev/null 2>&1
+* * * * * /root/RVD_APP/run.sh
+0/3  * * * * /usr/sbin/ntpdate 10.13.80.254 >> /tmp/ntptest.log 2>&1
 
 EOF
 )

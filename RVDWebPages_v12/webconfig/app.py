@@ -149,6 +149,7 @@ def write_network_settings(host, rvd_address, device_id, ip_address1, ip_address
     print("Network settings written successfully.")
 
 def extract_version():
+    global version_part
     try:
         files = [f for f in os.listdir(firmware_path) if f.startswith('RVD')]
         
@@ -232,8 +233,8 @@ PATH=/usr/local/sbin:/usr/local/bin:/sbin:/bin:/usr/sbin:/usr/bin
 # | +-------- Hour (0 - 23)
 # +---------- Minute (0 - 59)
 
-* * * * * /root/RVD_APP/run.sh # Check the RVD program every 1 minute
-#*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} > /dev/null 2>&1
+* * * * * /root/RVD_APP/run.sh
+#*/{ntptimesync} * * * * /usr/sbin/ntpdate {ntppriserver} >> /tmp/ntptest.log 2>&1
             """
 
         print(new_crontab_content)
@@ -275,9 +276,9 @@ def upload_firmware():
         file_path = os.path.join(app.config['firmware_path'], file.filename)
         file.save(file_path)
         
-        #output_filename = f"rvd_{version}"
+        # output_filename = f"rvd_{version_part}"
         #output_file_path = os.path.join(app.config['firmware_path'], output_filename)
-        gcc_command = f"gcc {file_path} -o /root/RVD_APP/sources/rvd-v1.0.0b1 -lpthread -lmodbus"
+        gcc_command = f"gcc {file_path} -o /root/RVD_APP/sources/rvd_program -lpthread -lmodbus"
 
         process = subprocess.run(gcc_command, shell=True, stdout=subprocess.PIPE, stderr=subprocess.PIPE)
 

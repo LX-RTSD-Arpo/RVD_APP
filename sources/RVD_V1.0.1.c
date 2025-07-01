@@ -1,4 +1,4 @@
-// RVD V1.0.0b1
+// RVD V1.0.1
 #include <arpa/inet.h>
 #include <dirent.h>
 #include <errno.h>
